@@ -1,0 +1,44 @@
+steps:
+  # 1. Build the Docker container image locally on Cloud Build
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'build',
+      '-t', '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/${_IMAGE}:${_TAG}',
+      '.'
+    ]
+
+  # 2. Push the built container image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'push',
+      '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/${_IMAGE}:${_TAG}'
+    ]
+
+  # 3. Deploy the container to Google Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - '${_SERVICE_NAME}'
+      - '--image=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/${_IMAGE}:${_TAG}'
+      - '--region=${_REGION}'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+      - '--service-account=${_SERVICE_ACCOUNT}'
+      - '--set-env-vars=GEMINI_API_KEY=${_GEMINI_API_KEY},SHOPIFY_API_URL=${_SHOPIFY_API_URL},SHOPIFY_ACCESS_TOKEN=${_SHOPIFY_ACCESS_TOKEN},APP_PORT=8080'
+
+# Configuration settings and placeholders
+substitutions:
+  _REGION: 'us-central1'
+  _REPO: 'shopify-launch-agents'
+  _IMAGE: 'launch-agent-service'
+  _TAG: 'latest'
+  _SERVICE_NAME: 'shopify-product-launch-agent'
+  _SERVICE_ACCOUNT: 'agent-executor@PROJECT_ID.iam.gserviceaccount.com'
+  _GEMINI_API_KEY: 'your-gemini-key'
+  _SHOPIFY_API_URL: 'http://localhost:8080'
+  _SHOPIFY_ACCESS_TOKEN: 'your-shopify-token'
+
+options:
+  logging: CLOUD_LOGGING_ONLY

@@ -1,0 +1,25 @@
+# Google ADK Deployment Specification
+version: "1.0"
+project:
+  id: "your-gcp-project-id"         # Replace with target GCP Project ID
+  region: "us-central1"            # Target GCP deployment region
+
+# Application configuration settings
+app:
+  name: "shopify-product-launch-agent"
+  runtime: "python311"
+  entrypoint: "main:app"           # FastAPI server configuration
+
+# Vertex AI Reasoning Engine Configuration
+vertex_reasoning_engine:
+  display_name: "Shopify Product Launch Agent Engine"
+  description: "Reasoning Engine orchestrating agent DAG workflows for product publishing."
+  gcs_bucket: "gs://your-gcp-project-id-reasoning-engine"  # Staging bucket for serialization payloads
+  service_account: "agent-reasoning-executor@your-gcp-project-id.iam.gserviceaccount.com"
+
+# Artifact Registry configuration
+artifact_registry:
+  location: "us-central1"
+  repository: "shopify-launch-agents"
+  image_name: "launch-agent-service"
+  tag: "latest"

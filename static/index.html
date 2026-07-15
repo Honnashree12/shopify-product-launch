@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Launch Console — AI Shopify Product Launch Agent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0B0E14;
+    --panel:#12161F;
+    --panel-2:#161B26;
+    --border:#232A38;
+    --border-soft:#1B212D;
+    --text-hi:#EDEFF4;
+    --text-lo:#7C8494;
+    --text-dim:#4B5263;
+    --amber:#F0A202;
+    --amber-glow:rgba(240,162,2,0.35);
+    --green:#3DDC84;
+    --green-glow:rgba(61,220,132,0.35);
+    --red:#F1493D;
+    --red-glow:rgba(241,73,61,0.3);
+    --radius:10px;
+  }
+
+  *{ box-sizing:border-box; }
+
+  html,body{
+    margin:0; padding:0;
+    background:var(--ink);
+    color:var(--text-hi);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+  }
+
+  body{
+    background-image:
+      radial-gradient(circle at 15% 0%, rgba(240,162,2,0.06), transparent 45%),
+      radial-gradient(circle at 85% 100%, rgba(61,220,132,0.05), transparent 45%);
+  }
+
+  ::selection{ background:var(--amber); color:#1a1200; }
+
+  .wrap{
+    max-width:1180px;
+    margin:0 auto;
+    padding:28px 24px 80px;
+  }
+
+  /* ---------- Header ---------- */
+  header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding-bottom:22px;
+    border-bottom:1px solid var(--border-soft);
+    margin-bottom:28px;
+    flex-wrap:wrap;
+    gap:14px;
+  }
+
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+
+  .brand-mark{
+    width:34px; height:34px;
+    border-radius:8px;
+    background:linear-gradient(145deg, var(--amber), #b97400);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:15px;
+    color:#1a1200;
+    box-shadow:0 0 0 1px rgba(255,255,255,0.08) inset, 0 4px 14px var(--amber-glow);
+    flex-shrink:0;
+  }
+
+  .brand-text h1{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:17px;
+    font-weight:600;
+    margin:0;
+    letter-spacing:0.2px;
+  }
+
+  .brand-text p{
+    margin:2px 0 0;
+    font-size:12px;
+    color:var(--text-lo);
+    font-family:'JetBrains Mono',monospace;
+  }
+
+  .store-badge{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    padding:8px 14px;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:20px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:12.5px;
+    color:var(--text-lo);
+  }
+
+  .dot{
+    width:7px; height:7px;
+    border-radius:50%;
+    background:var(--text-dim);
+    flex-shrink:0;
+  }
+  .dot.live{ background:var(--green); box-shadow:0 0 0 3px var(--green-glow); animation:pulse-dot 2s infinite; }
+  .dot.down{ background:var(--red); box-shadow:0 0 0 3px var(--red-glow); }
+
+  @keyframes pulse-dot{
+    0%,100%{ opacity:1; }
+    50%{ opacity:0.45; }
+  }
+
+  /* ---------- Layout ---------- */
+  .grid{
+    display:grid;
+    grid-template-columns:360px 1fr;
+    gap:20px;
+    align-items:start;
+  }
+
+  @media (max-width:860px){
+    .grid{ grid-template-columns:1fr; }
+  }
+
+  .panel{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:22px;
+  }
+
+  .panel-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    color:var(--text-dim);
+    margin:0 0 16px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+
+  .panel-label::before{
+    content:'';
+    width:14px; height:1px;
+    background:var(--text-dim);
+  }
+
+  /* ---------- Form ---------- */
+  .field{ margin-bottom:16px; }
+
+  .field label{
+    display:block;
+    font-size:12.5px;
+    color:var(--text-lo);
+    margin-bottom:7px;
+    font-weight:500;
+  }
+
+  .field input, .field textarea{
+    width:100%;
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    border-radius:7px;
+    padding:10px 12px;
+    color:var(--text-hi);
+    font-family:'Inter',sans-serif;
+    font-size:13.5px;
+    outline:none;
+    transition:border-color .15s, box-shadow .15s;
+    resize:vertical;
+  }
+
+  .field textarea{ min-height:78px; line-height:1.5; }
+
+  .field input:focus, .field textarea:focus{
+    border-color:var(--amber);
+    box-shadow:0 0 0 3px var(--amber-glow);
+  }
+
+  .row-2{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+  }
+
+  .price-input{ position:relative; }
+  .price-input span{
+    position:absolute; left:12px; top:50%; transform:translateY(-50%);
+    color:var(--text-dim); font-size:13px; font-family:'JetBrains Mono',monospace;
+    pointer-events:none;
+  }
+  .price-input input{ padding-left:26px; }
+
+  button.launch-btn{
+    width:100%;
+    margin-top:6px;
+    background:var(--amber);
+    color:#1a1200;
+    border:none;
+    border-radius:7px;
+    padding:13px 16px;
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:14px;
+    letter-spacing:0.2px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    transition:transform .12s, box-shadow .12s, opacity .12s;
+    box-shadow:0 4px 16px var(--amber-glow);
+  }
+
+  button.launch-btn:hover:not(:disabled){ transform:translateY(-1px); box-shadow:0 6px 22px var(--amber-glow); }
+  button.launch-btn:active:not(:disabled){ transform:translateY(0); }
+  button.launch-btn:disabled{ opacity:0.55; cursor:not-allowed; box-shadow:none; }
+
+  .hint{
+    font-size:11.5px;
+    color:var(--text-dim);
+    margin-top:10px;
+    line-height:1.5;
+  }
+
+  /* ---------- Pipeline rail ---------- */
+  .rail-wrap{ margin-bottom:6px; }
+
+  .rail{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    position:relative;
+    padding:6px 4px 0;
+  }
+
+  .rail-line{
+    position:absolute;
+    top:23px; left:26px; right:26px;
+    height:2px;
+    background:var(--border);
+    z-index:0;
+    overflow:hidden;
+    border-radius:2px;
+  }
+
+  .rail-line-fill{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg, var(--amber), var(--green));
+    transition:width .5s ease;
+  }
+
+  .rail-node{
+    position:relative;
+    z-index:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:9px;
+    width:70px;
+    text-align:center;
+  }
+
+  .lamp{
+    width:46px; height:46px;
+    border-radius:50%;
+    background:var(--panel-2);
+    border:1.5px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;
+    font-weight:600;
+    color:var(--text-dim);
+    transition:all .3s ease;
+  }
+
+  .lamp.active{
+    border-color:var(--amber);
+    color:var(--amber);
+    box-shadow:0 0 0 5px var(--amber-glow);
+    animation:pulse-lamp 1.4s infinite;
+  }
+
+  .lamp.done{
+    background:var(--green);
+    border-color:var(--green);
+    color:#0a1f13;
+    box-shadow:0 0 0 5px var(--green-glow);
+  }
+
+  .lamp.failed{
+    background:var(--red);
+    border-color:var(--red);
+    color:#2a0906;
+    box-shadow:0 0 0 5px var(--red-glow);
+  }
+
+  @keyframes pulse-lamp{
+    0%,100%{ box-shadow:0 0 0 5px var(--amber-glow); }
+    50%{ box-shadow:0 0 0 9px transparent; }
+  }
+
+  .rail-node .stage-name{
+    font-size:11px;
+    font-weight:600;
+    color:var(--text-lo);
+  }
+  .rail-node.is-current .stage-name,
+  .rail-node.is-done .stage-name{ color:var(--text-hi); }
+
+  .rail-node .stage-sub{
+    font-size:9.5px;
+    color:var(--text-dim);
+    font-family:'JetBrains Mono',monospace;
+  }
+
+  @media (max-width:640px){
+    .rail{ overflow-x:auto; padding-bottom:8px; }
+    .rail-node{ width:58px; flex-shrink:0; }
+    .rail-line{ left:23px; right:23px; }
+  }
+
+  /* ---------- Result area ---------- */
+  .result-panel{ margin-top:20px; }
+
+  .empty-state{
+    padding:46px 20px;
+    text-align:center;
+    color:var(--text-dim);
+  }
+
+  .empty-state .glyph{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:28px;
+    color:var(--text-dim);
+    margin-bottom:10px;
+    opacity:0.6;
+  }
+
+  .empty-state p{
+    font-size:13px;
+    margin:0;
+    line-height:1.6;
+  }
+
+  .status-line{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:12.5px;
+    color:var(--text-lo);
+    margin-bottom:18px;
+    padding-bottom:16px;
+    border-bottom:1px solid var(--border-soft);
+  }
+
+  .status-pill{
+    padding:3px 10px;
+    border-radius:20px;
+    font-size:10.5px;
+    font-weight:600;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+  }
+  .status-pill.pending{ background:rgba(240,162,2,0.15); color:var(--amber); }
+  .status-pill.running{ background:rgba(240,162,2,0.15); color:var(--amber); }
+  .status-pill.completed{ background:rgba(61,220,132,0.15); color:var(--green); }
+  .status-pill.failed{ background:rgba(241,73,61,0.15); color:var(--red); }
+
+  .card-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+    margin-top:18px;
+  }
+
+  @media (max-width:640px){ .card-grid{ grid-template-columns:1fr; } }
+
+  .mini-card{
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:16px;
+  }
+
+  .mini-card h3{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:13px;
+    margin:0 0 10px;
+    display:flex;
+    align-items:center;
+    gap:7px;
+  }
+
+  .mini-card h3 .ok{ color:var(--green); }
+  .mini-card h3 .bad{ color:var(--red); }
+
+  .mini-card p, .mini-card li{
+    font-size:12.5px;
+    color:var(--text-lo);
+    line-height:1.6;
+    margin:0;
+  }
+
+  .check-list{ list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:7px; }
+  .check-list li{ display:flex; align-items:center; gap:8px; font-size:12px; }
+  .check-list .icon{ font-family:'JetBrains Mono',monospace; font-size:12px; width:14px; }
+  .check-list .icon.pass{ color:var(--green); }
+  .check-list .icon.fail{ color:var(--red); }
+
+  .product-hero{
+    grid-column:1 / -1;
+    background:linear-gradient(150deg, var(--panel-2), var(--panel));
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:18px;
+    flex-wrap:wrap;
+  }
+
+  .product-hero .info h3{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:17px;
+    margin:0 0 6px;
+  }
+
+  .product-hero .info .price{
+    font-family:'JetBrains Mono',monospace;
+    color:var(--green);
+    font-size:14px;
+    font-weight:600;
+  }
+
+  .product-hero .info .tag-row{
+    display:flex; flex-wrap:wrap; gap:6px; margin-top:10px;
+  }
+
+  .tag{
+    font-size:10.5px;
+    font-family:'JetBrains Mono',monospace;
+    color:var(--text-lo);
+    background:var(--panel);
+    border:1px solid var(--border);
+    padding:3px 8px;
+    border-radius:5px;
+  }
+
+  .view-btn{
+    background:var(--green);
+    color:#0a1f13;
+    text-decoration:none;
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:13px;
+    padding:11px 18px;
+    border-radius:7px;
+    white-space:nowrap;
+    box-shadow:0 4px 16px var(--green-glow);
+    transition:transform .12s;
+  }
+  .view-btn:hover{ transform:translateY(-1px); }
+
+  .error-card{
+    background:rgba(241,73,61,0.08);
+    border:1px solid rgba(241,73,61,0.3);
+    border-radius:8px;
+    padding:16px;
+    margin-top:18px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:12.5px;
+    color:#ff9a92;
+    line-height:1.6;
+  }
+
+  .session-id{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    color:var(--text-dim);
+  }
+
+  .spinner{
+    width:11px; height:11px;
+    border-radius:50%;
+    border:2px solid var(--border);
+    border-top-color:var(--amber);
+    animation:spin 0.8s linear infinite;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="brand">
+      <div class="brand-mark">LC</div>
+      <div class="brand-text">
+        <h1>Launch Console</h1>
+        <p>AI Shopify Product Launch Agent · Google ADK</p>
+      </div>
+    </div>
+    <div class="store-badge">
+      <span class="dot" id="healthDot"></span>
+      <span id="healthText">checking API…</span>
+    </div>
+  </header>
+
+  <div class="grid">
+
+    <!-- LEFT: Launch form -->
+    <div class="panel">
+      <p class="panel-label">New Launch</p>
+
+      <div class="field">
+        <label for="productName">Product name</label>
+        <input type="text" id="productName" placeholder="Wireless Bluetooth Earbuds" />
+      </div>
+
+      <div class="field">
+        <label for="rawDescription">Raw description</label>
+        <textarea id="rawDescription" placeholder="Experience premium sound with ENC noise cancellation and 30-hour battery life."></textarea>
+      </div>
+
+      <div class="row-2">
+        <div class="field price-input">
+          <label for="price">Price</label>
+          <span>₹</span>
+          <input type="number" id="price" placeholder="2499" min="0" step="0.01" />
+        </div>
+        <div class="field">
+          <label for="category">Category</label>
+          <input type="text" id="category" placeholder="Electronics" />
+        </div>
+      </div>
+
+      <button class="launch-btn" id="launchBtn" onclick="launchProduct()">
+        <span id="launchBtnText">Launch product</span>
+      </button>
+
+      <p class="hint">Runs the full agent pipeline — Copywriter → SEO → Marketing → Publisher → Verification → Report — and publishes to your connected Shopify store.</p>
+    </div>
+
+    <!-- RIGHT: Pipeline + results -->
+    <div class="panel">
+      <p class="panel-label">Pipeline</p>
+
+      <div class="rail-wrap">
+        <div class="rail">
+          <div class="rail-line"><div class="rail-line-fill" id="railFill"></div></div>
+          <div class="rail-node" data-stage="1">
+            <div class="lamp" id="lamp1">01</div>
+            <div class="stage-name">Copywriter</div>
+            <div class="stage-sub">description</div>
+          </div>
+          <div class="rail-node" data-stage="2">
+            <div class="lamp" id="lamp2">02</div>
+            <div class="stage-name">SEO</div>
+            <div class="stage-sub">metadata</div>
+          </div>
+          <div class="rail-node" data-stage="3">
+            <div class="lamp" id="lamp3">03</div>
+            <div class="stage-name">Marketing</div>
+            <div class="stage-sub">strategy</div>
+          </div>
+          <div class="rail-node" data-stage="4">
+            <div class="lamp" id="lamp4">04</div>
+            <div class="stage-name">Publisher</div>
+            <div class="stage-sub">Shopify</div>
+          </div>
+          <div class="rail-node" data-stage="5">
+            <div class="lamp" id="lamp5">05</div>
+            <div class="stage-name">Verify</div>
+            <div class="stage-sub">live check</div>
+          </div>
+          <div class="rail-node" data-stage="6">
+            <div class="lamp" id="lamp6">06</div>
+            <div class="stage-name">Report</div>
+            <div class="stage-sub">md · json</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="result-panel" id="resultPanel">
+        <div class="empty-state">
+          <div class="glyph">＋</div>
+          <p>Fill in a product on the left and hit Launch.<br>Results from the live Shopify store will appear here.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const API_BASE = window.location.origin;
+let pollTimer = null;
+let railTimer = null;
+
+// ---------- Health check ----------
+async function checkHealth(){
+  const dot = document.getElementById('healthDot');
+  const text = document.getElementById('healthText');
+  try{
+    const res = await fetch(`${API_BASE}/health`);
+    if(res.ok){
+      dot.className = 'dot live';
+      text.textContent = 'API online';
+    } else {
+      throw new Error('bad status');
+    }
+  }catch(e){
+    dot.className = 'dot down';
+    text.textContent = 'API unreachable';
+  }
+}
+checkHealth();
+setInterval(checkHealth, 15000);
+
+// ---------- Pipeline rail helpers ----------
+const STAGE_COUNT = 6;
+
+function resetRail(){
+  for(let i=1;i<=STAGE_COUNT;i++){
+    const lamp = document.getElementById('lamp'+i);
+    lamp.className = 'lamp';
+    lamp.textContent = String(i).padStart(2,'0');
+  }
+  document.getElementById('railFill').style.width = '0%';
+  if(railTimer){ clearInterval(railTimer); railTimer = null; }
+}
+
+function setRailProgress(activeStage){
+  // activeStage: 0 = none active yet, 1-6 = which stage is currently pulsing
+  for(let i=1;i<=STAGE_COUNT;i++){
+    const lamp = document.getElementById('lamp'+i);
+    if(i < activeStage){
+      lamp.className = 'lamp done';
+      lamp.textContent = '✓';
+    } else if(i === activeStage){
+      lamp.className = 'lamp active';
+      lamp.textContent = String(i).padStart(2,'0');
+    } else {
+      lamp.className = 'lamp';
+      lamp.textContent = String(i).padStart(2,'0');
+    }
+  }
+  const pct = Math.max(0, (activeStage-1)) / STAGE_COUNT * 100;
+  document.getElementById('railFill').style.width = pct + '%';
+}
+
+function completeRail(success){
+  if(railTimer){ clearInterval(railTimer); railTimer = null; }
+  for(let i=1;i<=STAGE_COUNT;i++){
+    const lamp = document.getElementById('lamp'+i);
+    lamp.className = success ? 'lamp done' : (i<=3 ? 'lamp done' : 'lamp');
+    lamp.textContent = success ? '✓' : (i<=3 ? '✓' : String(i).padStart(2,'0'));
+  }
+  document.getElementById('railFill').style.width = success ? '100%' : '45%';
+}
+
+function failRailAt(stage){
+  if(railTimer){ clearInterval(railTimer); railTimer = null; }
+  for(let i=1;i<=STAGE_COUNT;i++){
+    const lamp = document.getElementById('lamp'+i);
+    if(i < stage){ lamp.className='lamp done'; lamp.textContent='✓'; }
+    else if(i === stage){ lamp.className='lamp failed'; lamp.textContent='!'; }
+    else { lamp.className='lamp'; lamp.textContent=String(i).padStart(2,'0'); }
+  }
+}
+
+// Animate the rail as an estimated progress indicator while the
+// workflow runs in the background (the API reports overall status
+// only, not a live per-agent signal, so this reflects typical pacing
+// rather than a guaranteed real-time position).
+function animateRail(){
+  let stage = 1;
+  setRailProgress(stage);
+  railTimer = setInterval(()=>{
+    stage += 1;
+    if(stage > STAGE_COUNT) stage = STAGE_COUNT;
+    setRailProgress(stage);
+  }, 3200);
+}
+
+// ---------- Launch flow ----------
+async function launchProduct(){
+  const productName = document.getElementById('productName').value.trim();
+  const rawDescription = document.getElementById('rawDescription').value.trim();
+  const price = document.getElementById('price').value;
+  const category = document.getElementById('category').value.trim();
+
+  if(!productName || !rawDescription){
+    renderError('Product name and description are required.');
+    return;
+  }
+
+  const btn = document.getElementById('launchBtn');
+  const btnText = document.getElementById('launchBtnText');
+  btn.disabled = true;
+  btnText.innerHTML = '<span class="spinner"></span>';
+
+  resetRail();
+  animateRail();
+  renderPending();
+
+  try{
+    const res = await fetch(`${API_BASE}/launch`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        product_name: productName,
+        raw_description: rawDescription,
+        price: price ? parseFloat(price) : null,
+        category: category || null,
+      })
+    });
+
+    if(!res.ok){
+      const err = await res.json().catch(()=>({}));
+      throw new Error(err.detail ? JSON.stringify(err.detail) : `Launch request failed (${res.status})`);
+    }
+
+    const data = await res.json();
+    pollStatus(data.session_id);
+
+  }catch(e){
+    completeRail(false);
+    renderError(e.message || 'Could not reach the launch API.');
+    btn.disabled = false;
+    btnText.textContent = 'Launch product';
+  }
+}
+
+function pollStatus(sessionId){
+  if(pollTimer) clearInterval(pollTimer);
+
+  pollTimer = setInterval(async ()=>{
+    try{
+      const res = await fetch(`${API_BASE}/status/${sessionId}`);
+      if(!res.ok) return;
+      const state = await res.json();
+
+      if(state.status === 'completed'){
+        clearInterval(pollTimer);
+        completeRail(true);
+        renderResult(state, sessionId);
+        resetButton();
+      } else if(state.status === 'failed'){
+        clearInterval(pollTimer);
+        failRailAt(4);
+        renderError((state.errors && state.errors.workflow_error) || 'The workflow failed. Check the server terminal for details.', sessionId);
+        resetButton();
+      }
+      // pending/running -> keep polling, rail animation keeps going
+    }catch(e){
+      // transient network hiccup — keep polling
+    }
+  }, 2500);
+}
+
+function resetButton(){
+  const btn = document.getElementById('launchBtn');
+  const btnText = document.getElementById('launchBtnText');
+  btn.disabled = false;
+  btnText.textContent = 'Launch product';
+}
+
+// ---------- Rendering ----------
+function renderPending(){
+  document.getElementById('resultPanel').innerHTML = `
+    <div class="status-line">
+      <span class="spinner"></span>
+      <span>Workflow running — agents are generating content and publishing to Shopify…</span>
+    </div>
+  `;
+}
+
+function renderError(message, sessionId){
+  document.getElementById('resultPanel').innerHTML = `
+    <div class="status-line">
+      <span class="status-pill failed">Failed</span>
+      ${sessionId ? `<span class="session-id">session ${sessionId}</span>` : ''}
+    </div>
+    <div class="error-card">${escapeHtml(message)}</div>
+  `;
+}
+
+function renderResult(state, sessionId){
+  const product = state.shopify_product || {};
+  const seo = state.seo_metadata || {};
+  const verification = state.verification_result || {};
+  const marketing = state.marketing || {};
+
+  const tags = (product.tags || '').split(',').map(t=>t.trim()).filter(Boolean);
+
+  const checklist = [
+    ['Product exists on Shopify', verification.product_exists],
+    ['Status is active', verification.status_active],
+    ['Price matches', verification.price_matched],
+    ['Purchasable', verification.purchasable],
+  ];
+
+  document.getElementById('resultPanel').innerHTML = `
+    <div class="status-line">
+      <span class="status-pill completed">Live</span>
+      <span class="session-id">session ${sessionId}</span>
+    </div>
+
+    <div class="card-grid">
+
+      <div class="product-hero">
+        <div class="info">
+          <h3>${escapeHtml(product.title || state.product_name || 'Untitled product')}</h3>
+          <div class="price">₹${(product.price ?? state.price ?? '—')}</div>
+          ${tags.length ? `<div class="tag-row">${tags.slice(0,6).map(t=>`<span class="tag">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
+        </div>
+        ${state.shopify_url ? `<a class="view-btn" href="${state.shopify_url}" target="_blank" rel="noopener">View on Shopify →</a>` : ''}
+      </div>
+
+      <div class="mini-card">
+        <h3><span class="ok">✓</span> Verification</h3>
+        <ul class="check-list">
+          ${checklist.map(([label, pass])=>`
+            <li><span class="icon ${pass ? 'pass':'fail'}">${pass ? '✓':'✕'}</span> ${label}</li>
+          `).join('')}
+        </ul>
+      </div>
+
+      <div class="mini-card">
+        <h3>SEO metadata</h3>
+        <p><strong>${escapeHtml(seo.title || '—')}</strong></p>
+        <p style="margin-top:6px;">${escapeHtml(seo.description || '—')}</p>
+      </div>
+
+      <div class="mini-card" style="grid-column:1 / -1;">
+        <h3>Marketing campaign</h3>
+        <p><strong>${escapeHtml(marketing.campaign_name || '—')}</strong></p>
+        <p style="margin-top:6px;">${escapeHtml(marketing.social_caption || '')}</p>
+      </div>
+
+      <div class="mini-card" style="grid-column:1 / -1;">
+        <h3>Reports</h3>
+        <p>Markdown: <span class="session-id">${escapeHtml(state.markdown_report_path || '—')}</span></p>
+        <p style="margin-top:4px;">JSON: <span class="session-id">${escapeHtml(state.json_report_path || '—')}</span></p>
+      </div>
+
+    </div>
+  `;
+}
+
+function escapeHtml(str){
+  if(str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+</script>
+</body>
+</html>
