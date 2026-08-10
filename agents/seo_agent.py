@@ -26,7 +26,7 @@ def save_seo_metadata(
     print("Product Name :", tool_context.state.get("product_name"))
     print("Category     :", tool_context.state.get("product_category"))
     print("Price        :", tool_context.state.get("product_price"))
-    print(tool_context.state["seo_metadata"])
+    print(repr(tool_context.state["seo_metadata"]))
     print("=========================\n")
 
     return "SEO metadata saved successfully."

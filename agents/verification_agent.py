@@ -30,12 +30,12 @@ def verify_product_listing(tool_context: ToolContext) -> str:
     if product_id is None:
         result["errors"].append("shopify_product_id missing")
         state["verification_result"] = result
-        return "Verification failed: Product ID missing."
+        return "Verification check complete. Result: Failed (shopify_product_id missing)."
 
     if expected_price is None:
         result["errors"].append("product_price missing")
         state["verification_result"] = result
-        return "Verification failed: product_price missing."
+        return "Verification check complete. Result: Failed (product_price missing)."
 
     try:
 
@@ -80,20 +80,20 @@ def verify_product_listing(tool_context: ToolContext) -> str:
         print("==================================\n")
 
         if result["purchasable"]:
-            return "Verification PASSED."
+            return "Verification check complete. Result: PASSED."
 
-        return "Verification FAILED."
+        return "Verification check complete. Result: FAILED."
 
     except (ShopifyConfigError, ShopifyAPIError) as e:
         logger.error("Shopify verification failed: %s", e)
         result["errors"].append(str(e))
         state["verification_result"] = result
-        return f"Verification failed: {e}"
+        return f"Verification check complete. Result: Failed ({e})"
     except Exception as e:
         logger.exception("Unexpected error during Shopify verification")
         result["errors"].append(str(e))
         state["verification_result"] = result
-        return f"Verification failed: {e}"
+        return f"Verification check complete. Result: Failed ({e})"
 
 
 verification_agent = Agent(
@@ -117,7 +117,7 @@ verify_product_listing()
 
 Return nothing except the tool call.
 
-Your final action MUST be calling verify_product_listing().
+Call verify_product_listing() exactly once. After the tool execution returns, stop immediately. Do not call the tool again.
 """,
     tools=[
         get_product_context,

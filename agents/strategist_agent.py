@@ -28,7 +28,7 @@ def save_marketing_strategy(
     }
 
     print("\n========== STRATEGIST ==========")
-    print(tool_context.state["marketing"])
+    print(repr(tool_context.state["marketing"]))
     print("================================\n")
 
     return "Marketing strategy saved successfully."

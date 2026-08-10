@@ -1,0 +1,50 @@
+[
+  {
+    "product_name": "Python Mastery E-Book",
+    "raw_description": "An interactive guide containing 100 hands-on Python projects to take you from beginner to advanced software engineer. Includes exercises, solutions, and clean code examples.",
+    "price": 19.99,
+    "category": "E-Books"
+  },
+  {
+    "product_name": "Sleek Portfolio Web Templates",
+    "raw_description": "A curated collection of 10 modern, fully responsive web layouts built with HTML, CSS, and vanilla JS. Ideal for developers, designers, and creative freelancers.",
+    "price": 29.00,
+    "category": "Design Templates"
+  },
+  {
+    "product_name": "Ultimate React & Next.js Online Course",
+    "raw_description": "Learn to build high-performance web applications from scratch using React, Next.js, and TypeScript. Over 30 hours of video lectures with lifetime access.",
+    "price": 99.99,
+    "category": "Online Courses"
+  },
+  {
+    "product_name": "QueryCraft SQL Desktop License",
+    "raw_description": "A lightweight, cross-platform SQL query runner and database dashboard with smart autocompletion and schema visualization. Single user lifetime license.",
+    "price": 49.00,
+    "category": "Software Licenses"
+  },
+  {
+    "product_name": "PixelPerfect UI Icon Set",
+    "raw_description": "Over 500 vector icons designed for web and mobile interfaces. Includes SVG, PNG, and Figma formats with commercial use licensing.",
+    "price": 15.00,
+    "category": "Design Templates"
+  },
+  {
+    "product_name": "Shopify Launchpad Theme Kit",
+    "raw_description": "A modular Shopify theme boilerplate optimized for speed and conversion rate. Built with customizable sections and pre-configured SEO settings.",
+    "price": 149.00,
+    "category": "Theme Kits"
+  },
+  {
+    "product_name": "MindMap Notion Productivity System",
+    "raw_description": "A comprehensive workspace template for Notion to manage tasks, goals, notes, and habits. Designed using clean minimalist layout principles.",
+    "price": 12.50,
+    "category": "Productivity Tools"
+  },
+  {
+    "product_name": "Ambient Sound FX Library",
+    "raw_description": "A collection of 250 high-quality, royalty-free audio tracks and sound effects for video creators and game developers. Includes WAV and MP3 formats.",
+    "price": 35.00,
+    "category": "Audio Assets"
+  }
+]

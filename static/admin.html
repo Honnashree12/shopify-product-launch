@@ -1,0 +1,2157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Platform Control Center — AI Launch Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #05070f;
+            --bg-sidebar: #090c15;
+            --bg-card: rgba(13, 17, 30, 0.7);
+            --bg-card-hover: rgba(20, 26, 46, 0.85);
+            --border: rgba(255, 255, 255, 0.08);
+            --border-soft: rgba(255, 255, 255, 0.05);
+            --text-hi: #f3f4f6;
+            --text-lo: #9ca3af;
+            --text-dim: #4b5563;
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.25);
+            --green: #10b981;
+            --green-glow: rgba(16, 185, 129, 0.2);
+            --red: #ef4444;
+            --red-glow: rgba(239, 68, 68, 0.15);
+            --saffron: #f59e0b;
+            --saffron-glow: rgba(245, 158, 11, 0.2);
+            --radius-lg: 16px;
+            --radius-md: 10px;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--bg-dark);
+            color: var(--text-hi);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image:
+              radial-gradient(circle at 80% 10%, rgba(99, 102, 241, 0.08), transparent 45%),
+              radial-gradient(circle at 20% 90%, rgba(16, 185, 129, 0.05), transparent 45%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Sidebar Navigation */
+        aside {
+            width: 260px;
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+            height: 100vh;
+            position: fixed;
+            top: 0; left: 0;
+            z-index: 100;
+        }
+
+        .aside-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 36px;
+        }
+
+        .aside-brand .logo-mark {
+            width: 32px; height: 32px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--primary), #4f46e5);
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 15px;
+            color: #fff;
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        .aside-brand h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .nav-link {
+            background: none; border: none;
+            color: var(--text-lo);
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: left;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-link:hover {
+            color: #fff;
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+
+        .nav-link.active {
+            background-color: var(--primary);
+            color: #fff;
+            box-shadow: 0 4px 15px var(--primary-glow);
+        }
+
+        .aside-footer {
+            border-top: 1px solid var(--border);
+            padding-top: 20px;
+            margin-top: auto;
+        }
+
+        .console-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            color: var(--text-hi);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            text-decoration: none;
+            width: 100%;
+            transition: all 0.2s;
+        }
+
+        .console-btn:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: var(--primary);
+        }
+
+        /* Main Workspace Content */
+        main {
+            margin-left: 260px;
+            flex: 1;
+            padding: 40px;
+            max-width: 1100px;
+        }
+
+        /* Top Header Area */
+        .workspace-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .workspace-header h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 26px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .workspace-header p {
+            color: var(--text-lo);
+            margin: 4px 0 0;
+            font-size: 14px;
+        }
+
+        /* Metric Grid Cards */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 36px;
+        }
+
+        @media (max-width: 800px) {
+            .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        .metric-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            backdrop-filter: blur(12px);
+            transition: border-color 0.3s;
+        }
+
+        .metric-card:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .metric-card .lbl {
+            font-size: 11.5px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-lo);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .metric-card .val {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .metric-card .val.green {
+            color: var(--green);
+        }
+
+        /* Generic Card Styling */
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            margin-bottom: 28px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .card h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px;
+            margin: 0 0 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-soft);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Table Design */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 14px 18px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-soft);
+            font-size: 14px;
+        }
+
+        th {
+            color: var(--text-lo);
+            font-weight: 500;
+            background: rgba(255,255,255,0.01);
+        }
+
+        td {
+            color: var(--text-hi);
+        }
+
+        tr:hover td {
+            background-color: rgba(255,255,255,0.02);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-badge.draft { background-color: rgba(255, 255, 255, 0.05); color: var(--text-lo); }
+        .status-badge.generating { background-color: rgba(245, 158, 11, 0.15); color: var(--saffron); }
+        .status-badge.generated { background-color: rgba(99, 102, 241, 0.15); color: #818cf8; }
+        .status-badge.publishing { background-color: rgba(16, 185, 129, 0.15); color: var(--green); }
+        .status-badge.published { background-color: rgba(16, 185, 129, 0.15); color: var(--green); }
+        .status-badge.failed { background-color: rgba(239, 68, 68, 0.15); color: var(--red); }
+
+        /* Form Wizard Layout */
+        .wizard-steps {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 28px;
+            background: rgba(255,255,255,0.02);
+            padding: 6px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .step-node {
+            flex: 1;
+            text-align: center;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-lo);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .step-node.active {
+            background-color: var(--primary);
+            color: #fff;
+            box-shadow: 0 4px 12px var(--primary-glow);
+        }
+
+        .step-panel {
+            display: none;
+        }
+
+        .step-panel.active {
+            display: block;
+        }
+
+        .field {
+            margin-bottom: 20px;
+        }
+
+        .field label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-lo);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .field input, .field textarea {
+            width: 100%;
+            background-color: rgba(10, 12, 22, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 14px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 14.5px;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .field input:focus, .field textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+            background-color: rgba(10, 12, 22, 0.8);
+        }
+
+        .wizard-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 28px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-soft);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 14.5px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: #fff;
+            box-shadow: 0 4px 15px var(--primary-glow);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px var(--primary-glow);
+        }
+
+        .btn-secondary {
+            background-color: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            color: var(--text-hi);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background-color: rgba(255,255,255,0.06);
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Skeletal Loader Shimmer */
+        .skeleton {
+            background: linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.02) 75%);
+            background-size: 200% 100%;
+            animation: loading-shimmer 1.5s infinite;
+            border-radius: 4px;
+            color: transparent !important;
+        }
+
+        .skeleton-block {
+            height: 18px;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        @keyframes loading-shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Progress Animation Screen */
+        .progress-box {
+            background-color: rgba(13, 17, 30, 0.4);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            text-align: center;
+            display: none;
+        }
+
+        .progress-bar-wrap {
+            height: 6px;
+            background-color: rgba(255,255,255,0.05);
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 20px 0;
+            border: 1px solid var(--border-soft);
+        }
+
+        .progress-bar-fill {
+            height: 100%; width: 0%;
+            background: linear-gradient(90deg, var(--primary), var(--green));
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        /* Campaign Preview Screen Layout */
+        .preview-layout {
+            display: grid;
+            grid-template-columns: 1.8fr 1.2fr;
+            gap: 28px;
+        }
+
+        @media (max-width: 900px) {
+            .preview-layout { grid-template-columns: 1fr; }
+        }
+
+        .section-preview-title {
+            font-size: 12px; color: var(--text-lo);
+            font-family: 'JetBrains Mono', monospace;
+            text-transform: uppercase; letter-spacing: 1px;
+            margin-bottom: 8px; font-weight: 600;
+        }
+
+        .preview-box {
+            background-color: rgba(0, 0, 0, 0.25);
+            border: 1px solid var(--border-soft);
+            border-radius: 8px;
+            padding: 18px;
+            margin-bottom: 20px;
+            font-size: 13.5px;
+            line-height: 1.6;
+            color: var(--text-lo);
+        }
+
+        .preview-images-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .preview-img-card {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            background-color: rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s;
+        }
+
+        .preview-img-card:hover {
+            transform: scale(1.02);
+        }
+
+        .preview-img-card img {
+            width: 100%; height: 130px; object-fit: cover;
+            border-bottom: 1px solid var(--border-soft);
+        }
+
+        .preview-img-card .lbl {
+            padding: 8px; font-size: 11px; text-align: center; color: var(--text-lo);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Filters and search in Campaigns */
+        .search-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .search-input {
+            flex: 1;
+            background-color: rgba(255,255,255,0.02) !important;
+        }
+
+        /* Views */
+        .view-content {
+            display: none;
+        }
+
+        .view-content.active {
+            display: block;
+        }
+
+        /* Toast notification */
+        #toast {
+            position: fixed;
+            bottom: 30px; right: 30px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--primary);
+            color: #fff;
+            padding: 16px 24px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 15px var(--primary-glow);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Lovable/Vercel AI Workspace elements */
+        .progress-card-inline {
+            margin-bottom: 24px;
+            padding: 20px;
+            background: rgba(99, 102, 241, 0.03);
+            border: 1px solid var(--border-glow);
+            border-radius: var(--radius-lg);
+            backdrop-filter: blur(12px);
+        }
+        .progress-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14.5px;
+            color: var(--text-hi);
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+        .pct-val {
+            margin-left: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        .progress-bar-track {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 18px;
+            border: 1px solid var(--border-soft);
+        }
+        .progress-stages-grid {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .stage-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid var(--border-soft);
+            border-radius: 20px;
+            font-size: 12px;
+            color: var(--text-lo);
+            transition: all 0.3s ease;
+        }
+        .stage-item.running {
+            border-color: var(--primary);
+            color: var(--text-hi);
+            background: rgba(99, 102, 241, 0.05);
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+        .stage-item.completed {
+            border-color: var(--green);
+            color: var(--green);
+            background: rgba(16, 185, 129, 0.05);
+            box-shadow: 0 0 10px var(--green-glow);
+        }
+        .status-icon.spinner-mini {
+            width: 10px;
+            height: 10px;
+            border: 2px solid rgba(99, 102, 241, 0.2);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        .assets-workspace-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 28px;
+            margin-top: 24px;
+        }
+        .editor-workspace {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            background: #060812;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        .editor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            background: #0b0d1a;
+            border-bottom: 1px solid var(--border-soft);
+        }
+        .editor-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--text-lo);
+        }
+        .editor-toolbar, .headline-toolbar, .email-toolbar {
+            display: flex;
+            gap: 8px;
+        }
+        .editor-tool-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            color: var(--text-lo);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .editor-tool-btn:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.06);
+            border-color: var(--primary);
+        }
+        .editor-body {
+            display: flex;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13.5px;
+            min-height: 220px;
+            max-height: 380px;
+            overflow: auto;
+        }
+        .editor-lines {
+            padding: 16px 14px;
+            border-right: 1px solid var(--border-soft);
+            background: #04050b;
+            color: var(--text-dim);
+            text-align: right;
+            user-select: none;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .editor-content-wrapper {
+            flex: 1;
+            position: relative;
+        }
+        .editor-pre {
+            margin: 0;
+            padding: 16px;
+            overflow: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+            line-height: 1.6;
+        }
+        #editorCode {
+            display: block;
+            color: #cbd5e1;
+        }
+        .editor-skeleton-overlay, .headline-skeleton-overlay, .email-skeleton-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(6, 8, 18, 0.93);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            z-index: 10;
+            border-radius: inherit;
+            pointer-events: none;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+        .editor-skeleton-overlay.hidden, .headline-skeleton-overlay.hidden, .email-skeleton-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .sparkles-anim {
+            font-size: 26px;
+            animation: pulse-sparkle 1.8s infinite;
+        }
+        @keyframes pulse-sparkle {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 2px var(--primary)); opacity: 0.8; }
+            50% { transform: scale(1.15); filter: drop-shadow(0 0 10px var(--primary)); opacity: 1; }
+        }
+        .loading-text {
+            font-size: 13.5px;
+            color: var(--text-lo);
+            font-weight: 500;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .skeleton-shimmer-bar {
+            width: 75%;
+            height: 10px;
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.01) 25%, rgba(255, 255, 255, 0.04) 50%, rgba(255, 255, 255, 0.01) 75%);
+            background-size: 200% 100%;
+            animation: loading-shimmer 1.5s infinite;
+            border-radius: 4px;
+        }
+        .skeleton-shimmer-bar.short {
+            width: 45%;
+        }
+        .headline-container {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            background: #060812;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        .headline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            background: #0b0d1a;
+            border-bottom: 1px solid var(--border-soft);
+            font-size: 13px;
+            color: var(--text-lo);
+        }
+        .headline-card {
+            padding: 36px 28px;
+            text-align: center;
+            position: relative;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.04) 0%, rgba(139, 92, 246, 0.04) 100%);
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .headline-main-text {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 24px;
+            font-weight: 800;
+            margin: 0;
+            background: linear-gradient(90deg, #ffffff 10%, var(--primary) 60%, #c084fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.3;
+            text-shadow: 0 4px 20px rgba(99, 102, 241, 0.1);
+        }
+        .email-container {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            background: #060812;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        .email-client-preview {
+            display: flex;
+            flex-direction: column;
+            background: #090c16;
+            position: relative;
+        }
+        .email-client-meta {
+            padding: 16px 24px;
+            background: #070911;
+            border-bottom: 1px solid var(--border-soft);
+            font-size: 13px;
+        }
+        .meta-row {
+            margin-bottom: 8px;
+            display: flex;
+            gap: 8px;
+        }
+        .meta-row:last-child {
+            margin-bottom: 0;
+        }
+        .meta-lbl {
+            color: var(--text-dim);
+            width: 70px;
+            font-weight: 500;
+        }
+        .meta-val {
+            color: var(--text-lo);
+        }
+        .email-client-body-wrapper {
+            position: relative;
+            padding: 24px 28px;
+            min-height: 180px;
+            max-height: 380px;
+            overflow: auto;
+        }
+        .email-client-body {
+            color: #d1d5db;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+        .success-pill-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--green);
+            border-radius: 20px;
+            color: var(--green);
+            font-size: 12.5px;
+            font-weight: 600;
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.15);
+        }
+        .error-card-inline {
+            margin-bottom: 24px;
+            padding: 20px;
+            background: rgba(239, 68, 68, 0.04);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: var(--radius-lg);
+            backdrop-filter: blur(12px);
+        }
+        .err-icon {
+            font-size: 22px;
+            color: var(--red);
+        }
+        .email-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            background: #0b0d1a;
+            border-bottom: 1px solid var(--border-soft);
+            font-size: 13px;
+            color: var(--text-lo);
+        }
+        .thinking-dot-wrap {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+        .thinking-dot {
+            width: 6px;
+            height: 6px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            animation: bounce-dot 1.2s infinite ease-in-out;
+        }
+        .thinking-dot:nth-child(2) { animation-delay: 0.2s; }
+        .thinking-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes bounce-dot {
+            0%, 100% { transform: translateY(0); opacity: 0.4; }
+            50% { transform: translateY(-4px); opacity: 1; }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <aside>
+        <div class="aside-brand">
+            <div class="logo-mark">PC</div>
+            <h1>Launch Center</h1>
+        </div>
+        <div class="nav-links">
+            <button class="nav-link active" onclick="switchTab('dashboard')">
+                <span class="icon">📊</span> Dashboard
+            </button>
+            <button class="nav-link" onclick="switchTab('create')">
+                <span class="icon">⚡</span> Wizard Launch
+            </button>
+            <button class="nav-link" onclick="switchTab('history')">
+                <span class="icon">📁</span> Campaigns
+            </button>
+        </div>
+        <div class="aside-footer">
+            <a href="/" class="console-btn">➔ Product Console</a>
+        </div>
+    </aside>
+
+    <!-- Main Workspace Content -->
+    <main>
+        <!-- Top Workspace Header -->
+        <div class="workspace-header">
+            <div>
+                <h2 id="view-title">Dashboard Overview</h2>
+                <p id="view-subtitle">Live analytics from published Shopify campaigns</p>
+            </div>
+        </div>
+
+        <!-- DASHBOARD TAB -->
+        <div id="tab-dashboard" class="view-content active">
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="lbl">Total Workshops</div>
+                    <div class="val" id="metric-workshops">0</div>
+                </div>
+                <div class="metric-card">
+                    <div class="lbl">Upcoming Sessions</div>
+                    <div class="val" id="metric-upcoming">0</div>
+                </div>
+                <div class="metric-card">
+                    <div class="lbl">Registrations</div>
+                    <div class="val" id="metric-regs">0</div>
+                </div>
+                <div class="metric-card">
+                    <div class="lbl">Total Revenue</div>
+                    <div class="val green" id="metric-revenue">₹0</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Recent Registrations</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Parent Email</th>
+                            <th>Child Details</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Date Received</th>
+                        </tr>
+                    </thead>
+                    <tbody id="metrics-recent-orders">
+                        <tr id="dashboard-empty-row">
+                            <td colspan="6" style="text-align: center; color: var(--text-dim);">No signups received yet.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- CREATE WORKSHOP WIZARD TAB -->
+        <div id="tab-create" class="view-content">
+            <!-- Wizard Step Nodes -->
+            <div class="wizard-steps" id="wizardSteps">
+                <div class="step-node active" onclick="jumpToStep(1)">1. Details</div>
+                <div class="step-node" onclick="jumpToStep(2)">2. Copy</div>
+                <div class="step-node" onclick="jumpToStep(3)">3. Imagery</div>
+                <div class="step-node" onclick="jumpToStep(4)">4. SEO</div>
+                <div class="step-node" onclick="jumpToStep(5)">5. Review</div>
+            </div>
+
+            <div class="card" id="form-container">
+                <!-- Step 1: Details Form -->
+                <div class="step-panel active" id="step-panel-1">
+                    <h3>Workshop Parameters</h3>
+                    <form id="createForm" onsubmit="event.preventDefault();">
+                        <div class="field">
+                            <label for="wName">Workshop Name</label>
+                            <input type="text" id="wName" required placeholder="e.g. Mission Tiranga - Space Communication Lab">
+                        </div>
+                        <div class="field">
+                            <label for="wDesc">Quick Description (Context for generating marketing copy)</label>
+                            <textarea id="wDesc" required placeholder="Describe the topics and timeline overview..."></textarea>
+                        </div>
+                        <div class="row-2">
+                            <div class="field">
+                                <label for="wDate">Event Date</label>
+                                <input type="text" id="wDate" required placeholder="e.g. 15 August 2026">
+                            </div>
+                            <div class="field">
+                                <label for="wTime">Event Time Slot</label>
+                                <input type="text" id="wTime" required placeholder="e.g. 11:00 AM – 1:00 PM">
+                            </div>
+                        </div>
+                        <div class="row-2">
+                            <div class="field">
+                                <label for="wDuration">Duration</label>
+                                <input type="text" id="wDuration" required placeholder="e.g. 2 Hours">
+                            </div>
+                            <div class="field">
+                                <label for="wAge">Target Age Group</label>
+                                <input type="text" id="wAge" required placeholder="e.g. 8–14">
+                            </div>
+                        </div>
+                        <div class="row-2">
+                            <div class="field">
+                                <label for="wVenue">Venue Location</label>
+                                <input type="text" id="wVenue" required placeholder="e.g. Jayanagar, Bangalore">
+                            </div>
+                            <div class="field">
+                                <label for="wPrice">Ticket Price (₹)</label>
+                                <input type="number" id="wPrice" required value="499" min="0">
+                            </div>
+                        </div>
+                        <div class="row-2">
+                            <div class="field">
+                                <label for="wSalesEmail">Sales Team Notification Email</label>
+                                <input type="email" id="wSalesEmail" required placeholder="sales@yourstore.com">
+                            </div>
+                            <div class="field">
+                                <label for="wPoster">Poster Image Path/URL (Optional)</label>
+                                <input type="text" id="wPoster" placeholder="e.g. https://images.unsplash.com/...">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Step 2: Marketing Copy Preview -->
+                <div class="step-panel" id="step-panel-2">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
+                        <h3 style="margin:0;">Copy & Marketing Assets Workspace</h3>
+                        <div id="generation-success-badge" style="display:none;" class="success-pill-badge">
+                            <span class="icon">✨</span> Assets Generated Successfully
+                        </div>
+                    </div>
+
+                    <!-- Inline Progress Checklist -->
+                    <div id="inline-progress-card" class="progress-card-inline" style="display: none;">
+                        <div class="progress-info">
+                            <span class="sparkle-glow">✨</span>
+                            <span id="inline-progress-status">AI multi-agents are writing copy...</span>
+                            <span id="inline-progress-pct" class="pct-val">0%</span>
+                        </div>
+                        <div class="progress-bar-track">
+                            <div id="inline-progress-fill" class="progress-bar-fill"></div>
+                        </div>
+                        <div class="progress-stages-grid">
+                            <div class="stage-item" id="stage-desc">
+                                <span class="status-icon spinner-mini"></span>
+                                <span class="stage-label">Generating Description</span>
+                            </div>
+                            <div class="stage-item" id="stage-copy">
+                                <span class="status-icon spinner-mini"></span>
+                                <span class="stage-label">Writing Marketing Copy</span>
+                            </div>
+                            <div class="stage-item" id="stage-headline">
+                                <span class="status-icon spinner-mini"></span>
+                                <span class="stage-label">Creating Campaign Headline</span>
+                            </div>
+                            <div class="stage-item" id="stage-email">
+                                <span class="status-icon spinner-mini"></span>
+                                <span class="stage-label">Drafting Customer Email</span>
+                            </div>
+                            <div class="stage-item" id="stage-final">
+                                <span class="status-icon spinner-mini"></span>
+                                <span class="stage-label">Finalizing Assets</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Error Card -->
+                    <div id="inline-error-card" class="error-card-inline" style="display: none;">
+                        <div style="display: flex; align-items: flex-start; gap: 16px;">
+                            <span class="err-icon">⚠️</span>
+                            <div style="flex:1;">
+                                <h4 style="margin:0 0 6px; font-size:15px; color:#fecaca;">AI Generation Run Failed</h4>
+                                <p id="inline-error-text" style="margin:0; font-size:13.5px; color:rgba(254, 202, 202, 0.85); line-height:1.5;"></p>
+                                <div style="display:flex; gap:12px; margin-top:16px;">
+                                    <button class="btn btn-primary" style="padding:8px 16px; font-size:13px;" onclick="generateCampaign()">🔄 Retry Generation</button>
+                                    <button class="btn btn-secondary" style="padding:8px 16px; font-size:13px;" onclick="toggleErrorLogs()">View System Logs</button>
+                                </div>
+                                <pre id="error-logs-area" style="display:none; margin-top:12px; background:rgba(0,0,0,0.3); padding:12px; border-radius:6px; font-size:11px; overflow-x:auto; max-height:150px; font-family:'JetBrains Mono',monospace; color:var(--text-lo);"></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Asset workspace panels -->
+                    <div class="assets-workspace-grid">
+                        <!-- 1. HTML Description -->
+                        <div class="editor-workspace">
+                            <div class="editor-header">
+                                <div class="editor-meta">
+                                    <span class="file-icon">📄</span>
+                                    <span class="file-name">description.html</span>
+                                </div>
+                                <div class="editor-toolbar">
+                                    <button class="editor-tool-btn" id="btn-copy-desc" onclick="copyHTMLDescription()">
+                                        <span class="icon">📋</span> Copy
+                                    </button>
+                                    <button class="editor-tool-btn" onclick="expandHTMLDescription()">
+                                        <span class="icon">🗖</span> Expand
+                                    </button>
+                                    <button class="editor-tool-btn" onclick="generateCampaign()">
+                                        <span class="icon">🔄</span> Regenerate
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="editor-body">
+                                <div class="editor-lines" id="editorLineNumbers">
+                                    <span>1</span>
+                                </div>
+                                <div class="editor-content-wrapper">
+                                    <pre class="editor-pre"><code id="editorCode" class="language-html"></code></pre>
+                                    <div id="editorSkeleton" class="editor-skeleton-overlay">
+                                        <div class="sparkles-anim">✨</div>
+                                        <div class="loading-text">🤖 AI is writing your Shopify description...</div>
+                                        <div class="skeleton-shimmer-bar"></div>
+                                        <div class="skeleton-shimmer-bar short"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. Campaign Headline -->
+                        <div class="headline-container">
+                            <div class="headline-header">
+                                <span class="label">🎯 Campaign Headline</span>
+                                <div class="headline-toolbar">
+                                    <button class="editor-tool-btn" id="btn-copy-headline" onclick="copyHeadline()">
+                                        <span class="icon">📋</span> Copy
+                                    </button>
+                                    <button class="editor-tool-btn" onclick="generateCampaign()">
+                                        <span class="icon">🔄</span> Regenerate
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="headline-card">
+                                <h2 id="headlineText" class="headline-main-text"></h2>
+                                <div id="headlineSkeleton" class="headline-skeleton-overlay">
+                                    <div class="sparkles-anim">✨</div>
+                                    <div class="loading-text">🧠 AI is strategizing a high-conversion headline...</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3. Customer Email -->
+                        <div class="email-container">
+                            <div class="email-header">
+                                <span class="label">✉️ Customer Confirmation Email</span>
+                                <div class="email-toolbar">
+                                    <button class="editor-tool-btn" id="btn-copy-email" onclick="copyEmailHTML()">
+                                        <span class="icon">📋</span> Copy HTML
+                                    </button>
+                                    <button class="editor-tool-btn" onclick="previewEmailModal()">
+                                        <span class="icon">👁️</span> Preview
+                                    </button>
+                                    <button class="editor-tool-btn" onclick="generateCampaign()">
+                                        <span class="icon">🔄</span> Regenerate
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="email-client-preview">
+                                <div class="email-client-meta">
+                                    <div class="meta-row">
+                                        <span class="meta-lbl">From:</span>
+                                        <span class="meta-val">Space Workshops &lt;noreply@yourstore.com&gt;</span>
+                                    </div>
+                                    <div class="meta-row">
+                                        <span class="meta-lbl">To:</span>
+                                        <span class="meta-val" id="emailToAddress">customer@email.com</span>
+                                    </div>
+                                    <div class="meta-row">
+                                        <span class="meta-lbl">Subject:</span>
+                                        <span class="meta-val" id="emailSubjectLine"></span>
+                                    </div>
+                                </div>
+                                <div class="email-client-body-wrapper">
+                                    <div id="emailClientBody" class="email-client-body"></div>
+                                    <div id="emailSkeleton" class="email-skeleton-overlay">
+                                        <div class="sparkles-anim">✨</div>
+                                        <div class="loading-text">✉️ AI is drafting customer confirmation template...</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Imagery -->
+                <div class="step-panel" id="step-panel-3">
+                    <h3>Visual Illustration Prompts</h3>
+                    <div class="preview-images-grid">
+                        <div class="preview-img-card">
+                            <img id="previewImgHero" src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=300" alt="Hero">
+                            <div class="lbl">Hero visual (Centred Earth/Beams)</div>
+                        </div>
+                        <div class="preview-img-card">
+                            <img id="previewImgLife" src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=300" alt="Lifestyle">
+                            <div class="lbl">Experience visual (Kids hands-on)</div>
+                        </div>
+                    </div>
+                    <div class="section-preview-title">Google Imagen Prompt Archetypes</div>
+                    <div class="preview-box" id="previewImgPrompts" style="font-family:'JetBrains Mono'; font-size:11px; max-height: 150px; overflow-y: auto;">
+                        <span class="skeleton-text">Formulating image prompts...</span>
+                    </div>
+                </div>
+
+                <!-- Step 4: SEO Configurations -->
+                <div class="step-panel" id="step-panel-4">
+                    <h3>Search Engine Configurations</h3>
+                    <div class="field">
+                        <label>SEO Title Tag</label>
+                        <div class="preview-box" id="previewSeoTitle">N/A</div>
+                    </div>
+                    <div class="field">
+                        <label>SEO Meta Description</label>
+                        <div class="preview-box" id="previewSeoDesc">N/A</div>
+                    </div>
+                    <div class="field">
+                        <label>Keywords & Slug</label>
+                        <div class="preview-box" id="previewSeoKeywords">N/A</div>
+                    </div>
+                </div>
+
+                <!-- Step 5: Review & Live Publish -->
+                <div class="step-panel" id="step-panel-5">
+                    <h3>Ready for Launch</h3>
+                    <p style="color: var(--text-lo); line-height: 1.6; margin-bottom: 24px;">The AI generative agents have finalized copy copywriting, prompt rendering, and SEO tags. Approve below to publish directly into your connected Shopify Admin store.</p>
+                    
+                    <div id="live-publish-status-box" style="display:none; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 8px; margin-bottom: 24px; border: 1px solid var(--border-soft);">
+                        <div style="font-weight:600; margin-bottom: 12px;" id="publish-flow-step">Initial publishing status...</div>
+                        <div class="progress-bar-wrap" style="margin: 10px 0;"><div class="progress-bar-fill" id="publish-flow-fill"></div></div>
+                    </div>
+
+                    <div id="live-verification-results" style="display:none; margin-bottom:24px;">
+                        <div class="section-preview-title">Shopify Live Verification Results</div>
+                        <div class="preview-box" id="verification-text" style="font-family:'JetBrains Mono'; font-size:12px;">Waiting...</div>
+                    </div>
+
+                    <div class="preview-actions" id="wizard-publish-actions">
+                        <button class="btn btn-primary" onclick="publishCampaign()">🚀 PUBLISH TO SHOPIFY</button>
+                    </div>
+                </div>
+
+                <!-- Actions Navigation Bar -->
+                <div class="wizard-actions" id="wizardActionsNav">
+                    <button class="btn btn-secondary" id="btn-wizard-prev" onclick="moveStep(-1)" disabled>Previous</button>
+                    <button class="btn btn-primary" id="btn-wizard-next" onclick="moveStep(1)">Next Step</button>
+                    <button class="btn btn-primary" style="display: none;" id="btn-wizard-gen" onclick="generateCampaign()">⚡ GENERATE ASSETS</button>
+                </div>
+            </div>
+
+            <!-- Generation Running Overlay screen -->
+            <div class="progress-box" id="progressBox">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-weight: 600; font-size:16px;" id="progressStatus">Agent workflow strategizing...</span>
+                    <span id="progressPct" style="font-family:'JetBrains Mono'; font-size:14px; font-weight:600;">0%</span>
+                </div>
+                <div class="progress-bar-wrap">
+                    <div class="progress-bar-fill" id="progressFill"></div>
+                </div>
+                <p style="font-size:12.5px; color:var(--text-lo); margin:0;">Generative multi-agents are running. Creating descriptive copy, image prompts, and SEO tags.</p>
+            </div>
+        </div>
+
+        <!-- CAMPAIGNS HISTORY TAB -->
+        <div id="tab-history" class="view-content">
+            <div class="search-row">
+                <input type="text" class="field search-input" id="campaignSearch" placeholder="Search campaigns by name..." oninput="filterCampaigns()">
+                <select class="field" style="width: 150px; background-color: rgba(255,255,255,0.02) !important;" id="campaignFilter" onchange="filterCampaigns()">
+                    <option value="all">All Status</option>
+                    <option value="draft">Draft</option>
+                    <option value="published">Published</option>
+                    <option value="failed">Failed</option>
+                </select>
+            </div>
+
+            <div class="card">
+                <h3>Launch History</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Workshop ID</th>
+                            <th>Name</th>
+                            <th>Event Date</th>
+                            <th>Ticket Fee</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-table-body">
+                        <tr id="history-empty-row">
+                            <td colspan="6" style="text-align: center; color: var(--text-dim);">Loading workshop campaigns...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal: Expand Description HTML -->
+    <div class="modal" id="descExpandModal" style="display:none; align-items:center; justify-content:center; padding:20px;">
+        <div class="modal-card" style="max-width: 900px; height: 80vh; display: flex; flex-direction: column;">
+            <button class="modal-close" onclick="closeDescExpandModal()">×</button>
+            <h3 style="margin-top:0;">Shopify Description HTML Code</h3>
+            <div style="flex:1; overflow:auto; background:#070913; border:1px solid var(--border); border-radius:8px; padding:20px; margin-bottom:20px;">
+                <pre style="margin:0; font-family:'JetBrains Mono',monospace; font-size:13px; color:#f3f4f6; white-space:pre-wrap;"><code id="expandedCodeText"></code></pre>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:12px;">
+                <button class="btn btn-secondary" onclick="closeDescExpandModal()">Close</button>
+                <button class="btn btn-primary" onclick="copyExpandedDesc()">Copy Code</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Preview Email -->
+    <div class="modal" id="emailPreviewModal" style="display:none; align-items:center; justify-content:center; padding:20px;">
+        <div class="modal-card" style="max-width: 700px; height: 80vh; display: flex; flex-direction: column; background:#ffffff; color:#1f2937;">
+            <button class="modal-close" onclick="closeEmailPreviewModal()" style="color:#4b5563;">×</button>
+            <h3 style="margin-top:0; color:#111827; font-family:'Space Grotesk',sans-serif;">Email Client Preview</h3>
+            
+            <div style="border:1px solid #e5e7eb; border-radius:8px; flex:1; display:flex; flex-direction:column; overflow:hidden; background:#f9fafb;">
+                <div style="background:#f3f4f6; border-bottom:1px solid #e5e7eb; padding:12px 18px; font-size:13px; color:#6b7280; font-family:sans-serif;">
+                    <div style="margin-bottom:6px;"><strong style="color:#374151;">From:</strong> Space Workshops &lt;noreply@yourstore.com&gt;</div>
+                    <div style="margin-bottom:6px;"><strong style="color:#374151;">To:</strong> Parent &lt;customer@email.com&gt;</div>
+                    <div><strong style="color:#374151;">Subject:</strong> <span id="previewEmailSubject" style="color:#111827; font-weight:500;"></span></div>
+                </div>
+                <div style="flex:1; overflow:auto; padding:24px; background:#ffffff; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; line-height:1.6; color:#374151;" id="previewEmailBody">
+                </div>
+            </div>
+            
+            <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:20px;">
+                <button class="btn btn-secondary" onclick="closeEmailPreviewModal()" style="background:#f3f4f6; border:1px solid #d1d5db; color:#374151;">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast message overlay -->
+    <div id="toast">
+        <span id="toast-icon">ℹ️</span>
+        <span id="toast-text">Message here...</span>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+        let activeWorkshopId = null;
+        let activeSessionId = null;
+        let pollTimer = null;
+        let progressTimer = null;
+        let currentStep = 1;
+        let generatedState = null;
+        let loadedCampaigns = [];
+
+        // Switching Tabs
+        function switchTab(tabId) {
+            document.querySelectorAll('.nav-link').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.view-content').forEach(view => view.classList.remove('active'));
+            
+            // Set active button
+            const activeBtn = Array.from(document.querySelectorAll('.nav-link')).find(btn => btn.textContent.toLowerCase().includes(tabId.substring(0,4)));
+            if (activeBtn) activeBtn.classList.add('active');
+            
+            // Set active view
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            
+            // Set Titles
+            const titleMap = {
+                'dashboard': ['Dashboard Overview', 'Live analytics from published Shopify campaigns'],
+                'create': ['Wizard Campaign Launch', 'Set up and publish a generative workshop campaign'],
+                'history': ['Campaigns History', 'Database log of all workshop templates and launches']
+            };
+            document.getElementById('view-title').textContent = titleMap[tabId][0];
+            document.getElementById('view-subtitle').textContent = titleMap[tabId][1];
+
+            if (tabId === 'dashboard') loadDashboard();
+            if (tabId === 'history') loadHistory();
+        }
+
+        // Display Toast Alert
+        function showToast(message, icon = 'ℹ️') {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-text').textContent = message;
+            document.getElementById('toast-icon').textContent = icon;
+            toast.style.display = 'flex';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+
+        // Load dashboard stats
+        async function loadDashboard() {
+            // Render loading skeletons
+            document.getElementById('metric-workshops').innerHTML = '<span class="skeleton skeleton-block" style="width:40px; display:inline-block;"></span>';
+            document.getElementById('metric-upcoming').innerHTML = '<span class="skeleton skeleton-block" style="width:40px; display:inline-block;"></span>';
+            document.getElementById('metric-regs').innerHTML = '<span class="skeleton skeleton-block" style="width:40px; display:inline-block;"></span>';
+            document.getElementById('metric-revenue').innerHTML = '<span class="skeleton skeleton-block" style="width:60px; display:inline-block;"></span>';
+
+            try {
+                const res = await fetch(`${API_BASE}/api/dashboard/metrics`);
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById('metric-workshops').textContent = data.total_workshops;
+                    document.getElementById('metric-upcoming').textContent = data.upcoming_workshops;
+                    document.getElementById('metric-regs').textContent = data.total_registrations;
+                    document.getElementById('metric-revenue').textContent = `₹${Math.round(data.total_revenue)}`;
+                    
+                    // Render orders
+                    const ordersTbody = document.getElementById('metrics-recent-orders');
+                    if (data.recent_orders && data.recent_orders.length > 0) {
+                        ordersTbody.innerHTML = '';
+                        data.recent_orders.forEach(o => {
+                            const date = new Date(o.created_at).toLocaleDateString();
+                            ordersTbody.innerHTML += `
+                                <tr>
+                                    <td><strong>#${o.shopify_order_number || o.order_id}</strong></td>
+                                    <td>${o.customer_email}</td>
+                                    <td>${o.child_name || 'N/A'} (Age: ${o.child_age || 'N/A'})</td>
+                                    <td>₹${o.amount}</td>
+                                    <td><span class="status-badge published">${o.payment_status}</span></td>
+                                    <td>${date}</td>
+                                </tr>
+                            `;
+                        });
+                    } else {
+                        ordersTbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-dim);">No signups received yet.</td></tr>';
+                    }
+                }
+            } catch (e) {
+                console.error("Metrics failed to load", e);
+                showToast("Failed to fetch dashboard metrics", '⚠️');
+            }
+        }
+        loadDashboard();
+
+        // Load campaigns history
+        async function loadHistory() {
+            const tbody = document.getElementById('history-table-body');
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;"><span class="skeleton skeleton-block" style="width:100px; display:inline-block; margin: 10px 0;"></span></td></tr>';
+            try {
+                const res = await fetch(`${API_BASE}/api/workshops`);
+                if (res.ok) {
+                    loadedCampaigns = await res.json();
+                    renderCampaignRows(loadedCampaigns);
+                }
+            } catch (e) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--red);">Failed to load history list.</td></tr>';
+            }
+        }
+
+        function renderCampaignRows(campaigns) {
+            const tbody = document.getElementById('history-table-body');
+            tbody.innerHTML = '';
+            if (campaigns.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-dim);">No campaigns match your search context.</td></tr>`;
+                return;
+            }
+            campaigns.forEach(w => {
+                let btnHtml = '';
+                if (w.status === 'draft') {
+                    btnHtml = `<button class="btn btn-secondary" style="padding: 6px 12px; font-size:12px;" onclick="loadAndEditDraft('${w.id}')">Configure</button>`;
+                } else if (w.status === 'generated' || w.status === 'failed') {
+                    btnHtml = `<button class="btn btn-primary" style="padding: 6px 12px; font-size:12px;" onclick="jumpToGeneratedCampaign('${w.id}')">Launch</button>`;
+                } else if (w.status === 'published') {
+                    btnHtml = `<a href="/workshops/${w.id}" target="_blank" class="console-btn" style="padding: 6px 12px; display:inline-flex; width:auto; font-size:12px;">View Landing Page ➔</a>`;
+                }
+                
+                tbody.innerHTML += `
+                    <tr>
+                        <td><code>${w.id}</code></td>
+                        <td><strong>${w.name}</strong></td>
+                        <td>${w.date}</td>
+                        <td>₹${w.price}</td>
+                        <td><span class="status-badge ${w.status}">${w.status}</span></td>
+                        <td>${btnHtml}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function filterCampaigns() {
+            const search = document.getElementById('campaignSearch').value.toLowerCase();
+            const filter = document.getElementById('campaignFilter').value;
+            const filtered = loadedCampaigns.filter(w => {
+                const matchSearch = w.name.toLowerCase().includes(search) || w.id.toLowerCase().includes(search);
+                const matchStatus = filter === 'all' || w.status === filter;
+                return matchSearch && matchStatus;
+            });
+            renderCampaignRows(filtered);
+        }
+
+        // Wizard navigation helper functions
+        function jumpToStep(step) {
+            if (step > 1 && !activeWorkshopId) {
+                showToast("Save details first by clicking Next Step", '⚠️');
+                return;
+            }
+            if (step > 2 && !generatedState) {
+                showToast("Generate AI copywriting assets first", '⚠️');
+                return;
+            }
+            
+            // Set active step pane
+            document.querySelectorAll('.step-node').forEach((node, idx) => {
+                if (idx + 1 === step) node.classList.add('active');
+                else node.classList.remove('active');
+            });
+
+            document.querySelectorAll('.step-panel').forEach((panel, idx) => {
+                if (idx + 1 === step) panel.classList.add('active');
+                else panel.classList.remove('active');
+            });
+
+            currentStep = step;
+            updateWizardNavButtons();
+        }
+
+        function moveStep(direction) {
+            const next = currentStep + direction;
+            if (next === 2 && direction === 1 && !activeWorkshopId) {
+                saveStep1Details();
+            } else {
+                jumpToStep(next);
+            }
+        }
+
+        function updateWizardNavButtons() {
+            const btnPrev = document.getElementById('btn-wizard-prev');
+            const btnNext = document.getElementById('btn-wizard-next');
+            const btnGen = document.getElementById('btn-wizard-gen');
+
+            btnPrev.disabled = currentStep === 1;
+            
+            if (currentStep === 1) {
+                btnNext.style.display = 'inline-flex';
+                btnNext.textContent = 'Save & Next';
+                btnGen.style.display = 'none';
+            } else if (currentStep === 2 && !generatedState) {
+                btnNext.style.display = 'none';
+                btnGen.style.display = 'inline-flex';
+            } else if (currentStep === 5) {
+                btnNext.style.display = 'none';
+                btnGen.style.display = 'none';
+            } else {
+                btnNext.style.display = 'inline-flex';
+                btnNext.textContent = 'Next Step';
+                btnGen.style.display = 'none';
+            }
+        }
+
+        // Save step 1 details
+        async function saveStep1Details() {
+            const wName = document.getElementById('wName').value.trim();
+            const wDesc = document.getElementById('wDesc').value.trim();
+            const wDate = document.getElementById('wDate').value.trim();
+            const wTime = document.getElementById('wTime').value.trim();
+            const wDuration = document.getElementById('wDuration').value.trim();
+            const wAge = document.getElementById('wAge').value.trim();
+            const wVenue = document.getElementById('wVenue').value.trim();
+            const wPrice = parseFloat(document.getElementById('wPrice').value);
+            const wSalesEmail = document.getElementById('wSalesEmail').value.trim();
+            const wPoster = document.getElementById('wPoster').value.trim();
+
+            if (!wName || !wDesc || !wDate || !wTime || !wDuration || !wAge || !wVenue || !wPrice || !wSalesEmail) {
+                showToast("Please fill in all required workshop parameters", '⚠️');
+                return;
+            }
+
+            const btnNext = document.getElementById('btn-wizard-next');
+            btnNext.disabled = true;
+            btnNext.textContent = 'Saving...';
+
+            try {
+                const res = await fetch(`${API_BASE}/api/workshops`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: wName,
+                        description: wDesc,
+                        date: wDate,
+                        time: wTime,
+                        duration: wDuration,
+                        venue: wVenue,
+                        age_group: wAge,
+                        price: wPrice,
+                        sales_team_email: wSalesEmail,
+                        poster_path: wPoster || null
+                    })
+                });
+                
+                if (!res.ok) throw new Error("Failed to create workshop draft.");
+                const data = await res.json();
+                activeWorkshopId = data.workshop_id;
+                showToast("Workshop parameters saved as draft", '✓');
+                jumpToStep(2);
+            } catch (e) {
+                showToast(e.message || "Failed to save workshop parameters", '⚠️');
+            } finally {
+                btnNext.disabled = false;
+                btnNext.textContent = 'Save & Next';
+            }
+        }
+
+        // Utility: highlight HTML markup in raw text for code preview
+        function highlightHTML(html) {
+            if (!html) return "";
+            let escaped = html
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
+            
+            // Syntax coloring
+            escaped = escaped.replace(/(&lt;\/?[a-zA-Z0-9:-]+)/g, '<span style="color:#f43f5e; font-weight:500;">$1</span>');
+            escaped = escaped.replace(/(\/?&gt;)/g, '<span style="color:#f43f5e; font-weight:500;">$1</span>');
+            escaped = escaped.replace(/(\s[a-zA-Z0-9-]+)=/g, ' <span style="color:#38bdf8;">$1</span>=');
+            escaped = escaped.replace(/(&quot;.*?&quot;)/g, '<span style="color:#a78bfa;">$1</span>');
+            escaped = escaped.replace(/(&#x27;.*?&#x27;)/g, '<span style="color:#a78bfa;">$1</span>');
+            return escaped;
+        }
+
+        // Utility: count lines and build left side line numbers grid
+        function updateEditorLineNumbers(text) {
+            const linesContainer = document.getElementById('editorLineNumbers');
+            if (!linesContainer) return;
+            if (!text) {
+                linesContainer.innerHTML = '<span>1</span>';
+                return;
+            }
+            const count = text.split('\n').length;
+            let html = '';
+            for (let i = 1; i <= count; i++) {
+                html += `<span>${i}</span>`;
+            }
+            linesContainer.innerHTML = html;
+        }
+
+        // Clipboard copy actions
+        function copyTextToClipboard(text, msg) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast(msg || "Copied to clipboard!", '✓');
+            }).catch(() => {
+                showToast("Failed to copy text", '⚠️');
+            });
+        }
+
+        function copyHTMLDescription() {
+            const desc = generatedState ? (generatedState.generated_description || "") : "";
+            copyTextToClipboard(desc, "Description HTML copied!");
+        }
+
+        function copyHeadline() {
+            const marketing = generatedState ? (generatedState.marketing_assets || generatedState.marketing || {}) : {};
+            const headline = marketing.campaign_headline || "";
+            copyTextToClipboard(headline, "Campaign headline copied!");
+        }
+
+        function copyEmailHTML() {
+            const marketing = generatedState ? (generatedState.marketing_assets || generatedState.marketing || {}) : {};
+            const emailBody = marketing.email_body || "";
+            copyTextToClipboard(emailBody, "Email body text copied!");
+        }
+
+        // Modal triggers
+        function expandHTMLDescription() {
+            const desc = generatedState ? (generatedState.generated_description || "<!-- No description generated -->") : "";
+            document.getElementById('expandedCodeText').textContent = desc;
+            document.getElementById('descExpandModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDescExpandModal() {
+            document.getElementById('descExpandModal').style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        function copyExpandedDesc() {
+            const desc = document.getElementById('expandedCodeText').textContent;
+            copyTextToClipboard(desc, "Code copied from expand view!");
+        }
+
+        function previewEmailModal() {
+            const marketing = generatedState ? (generatedState.marketing_assets || generatedState.marketing || {}) : {};
+            const subject = marketing.email_subject || "Booking Confirmation";
+            const body = marketing.email_body || "No email body generated yet.";
+            
+            document.getElementById('previewEmailSubject').textContent = subject;
+            // Simple newlines replacement for visual rendering
+            document.getElementById('previewEmailBody').innerHTML = body.replace(/\n/g, '<br>');
+            document.getElementById('emailPreviewModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeEmailPreviewModal() {
+            document.getElementById('emailPreviewModal').style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        function toggleErrorLogs() {
+            const logs = document.getElementById('error-logs-area');
+            if (logs.style.display === 'none') {
+                logs.style.display = 'block';
+                if (generatedState && generatedState.errors) {
+                    logs.textContent = JSON.stringify(generatedState.errors, null, 2);
+                } else {
+                    logs.textContent = "No log details available.";
+                }
+            } else {
+                logs.style.display = 'none';
+            }
+        }
+
+        // Generate Campaign form action
+        async function generateCampaign() {
+            if (!activeWorkshopId) return;
+
+            // Reset UI states
+            document.getElementById('inline-error-card').style.display = 'none';
+            document.getElementById('generation-success-badge').style.display = 'none';
+            
+            // Show inline checklist and progress
+            const progressCard = document.getElementById('inline-progress-card');
+            progressCard.style.display = 'block';
+            
+            // Set checklist stages to running / active
+            const stages = ['stage-desc', 'stage-copy', 'stage-headline', 'stage-email', 'stage-final'];
+            stages.forEach(id => {
+                const stage = document.getElementById(id);
+                stage.className = 'stage-item';
+                stage.querySelector('.status-icon').className = 'status-icon spinner-mini';
+                stage.querySelector('.status-icon').innerHTML = '';
+            });
+            document.getElementById('stage-desc').classList.add('running');
+            document.getElementById('inline-progress-status').textContent = 'AI is writing your Shopify description...';
+            document.getElementById('inline-progress-fill').style.width = '10%';
+            document.getElementById('inline-progress-pct').textContent = '10%';
+
+            // Show skeleton loaders in step-panel-2
+            document.getElementById('editorSkeleton').classList.remove('hidden');
+            document.getElementById('headlineSkeleton').classList.remove('hidden');
+            document.getElementById('emailSkeleton').classList.remove('hidden');
+
+            // Disable generate button and show spinner
+            const btnGen = document.getElementById('btn-wizard-gen');
+            btnGen.disabled = true;
+            btnGen.innerHTML = '<span class="status-icon spinner-mini" style="border-top-color:#fff; width:12px; height:12px; display:inline-block;"></span> Generating...';
+
+            try {
+                const res = await fetch(`${API_BASE}/api/workshops/${activeWorkshopId}/generate`, { method: 'POST' });
+                if (!res.ok) throw new Error("Generative campaign pipeline failed to trigger.");
+                const data = await res.json();
+                activeSessionId = data.session_id;
+                pollWorkflowStatus(data.session_id);
+            } catch (e) {
+                btnGen.disabled = false;
+                btnGen.innerHTML = '⚡ Generate AI Assets';
+                progressCard.style.display = 'none';
+                document.getElementById('inline-error-card').style.display = 'block';
+                document.getElementById('inline-error-text').textContent = e.message || "Failed to execute generative agents";
+                showToast(e.message || "Failed to execute generative agents", '⚠️');
+            }
+        }
+
+        function pollWorkflowStatus(sessionId) {
+            if (pollTimer) clearInterval(pollTimer);
+            
+            let confettiFired = false;
+
+            pollTimer = setInterval(async () => {
+                try {
+                    const res = await fetch(`${API_BASE}/status/${sessionId}`);
+                    if (!res.ok) return;
+                    const state = await res.json();
+                    
+                    generatedState = state;
+                    
+                    let completedSteps = 0;
+                    
+                    // 1. Description check
+                    const stageDesc = document.getElementById('stage-desc');
+                    if (state.generated_description) {
+                        stageDesc.className = 'stage-item completed';
+                        stageDesc.querySelector('.status-icon').className = 'status-icon';
+                        stageDesc.querySelector('.status-icon').innerHTML = '✓';
+                        
+                        document.getElementById('editorCode').innerHTML = highlightHTML(state.generated_description);
+                        updateEditorLineNumbers(state.generated_description);
+                        document.getElementById('editorSkeleton').classList.add('hidden');
+                        completedSteps++;
+                    } else if (state.status === 'pending' || state.status === 'running') {
+                        stageDesc.className = 'stage-item running';
+                    }
+
+                    // 2. Marketing Copy check
+                    const stageCopy = document.getElementById('stage-copy');
+                    const marketing = state.marketing_assets || state.marketing || {};
+                    if (state.marketing_assets || state.marketing) {
+                        stageCopy.className = 'stage-item completed';
+                        stageCopy.querySelector('.status-icon').className = 'status-icon';
+                        stageCopy.querySelector('.status-icon').innerHTML = '✓';
+                        completedSteps++;
+                    } else if (state.generated_description) {
+                        stageCopy.className = 'stage-item running';
+                        document.getElementById('inline-progress-status').textContent = 'AI is writing marketing copy details...';
+                    }
+
+                    // 3. Headline check
+                    const stageHeadline = document.getElementById('stage-headline');
+                    if (marketing.campaign_headline) {
+                        stageHeadline.className = 'stage-item completed';
+                        stageHeadline.querySelector('.status-icon').className = 'status-icon';
+                        stageHeadline.querySelector('.status-icon').innerHTML = '✓';
+                        
+                        document.getElementById('headlineText').textContent = marketing.campaign_headline;
+                        document.getElementById('headlineSkeleton').classList.add('hidden');
+                        completedSteps++;
+                    } else if (state.marketing_assets || state.marketing) {
+                        stageHeadline.className = 'stage-item running';
+                        document.getElementById('inline-progress-status').textContent = 'AI is formulating campaign headline...';
+                    }
+
+                    // 4. Email check
+                    const stageEmail = document.getElementById('stage-email');
+                    if (marketing.email_body) {
+                        stageEmail.className = 'stage-item completed';
+                        stageEmail.querySelector('.status-icon').className = 'status-icon';
+                        stageEmail.querySelector('.status-icon').innerHTML = '✓';
+                        
+                        document.getElementById('emailSubjectLine').textContent = marketing.email_subject || 'Booking Confirmation';
+                        document.getElementById('emailClientBody').textContent = marketing.email_body;
+                        document.getElementById('emailSkeleton').classList.add('hidden');
+                        completedSteps++;
+                    } else if (marketing.campaign_headline) {
+                        stageEmail.className = 'stage-item running';
+                        document.getElementById('inline-progress-status').textContent = 'AI is drafting customer confirmation email...';
+                    }
+
+                    // Update progress bar
+                    let pct = Math.max(10, Math.round((completedSteps / 5) * 100));
+                    if (pct > 90 && state.status !== 'completed') pct = 90;
+                    document.getElementById('inline-progress-fill').style.width = `${pct}%`;
+                    document.getElementById('inline-progress-pct').textContent = `${pct}%`;
+
+                    // 5. Final Completed state check
+                    const stageFinal = document.getElementById('stage-final');
+                    if (state.status === 'completed') {
+                        clearInterval(pollTimer);
+                        
+                        stageFinal.className = 'stage-item completed';
+                        stageFinal.querySelector('.status-icon').className = 'status-icon';
+                        stageFinal.querySelector('.status-icon').innerHTML = '✓';
+                        
+                        document.getElementById('inline-progress-fill').style.width = '100%';
+                        document.getElementById('inline-progress-pct').textContent = '100%';
+                        document.getElementById('inline-progress-status').textContent = 'AI assets finalized successfully!';
+                        
+                        // Populate any remaining fields
+                        populateWizardState(state);
+                        
+                        // Hide Skeletons
+                        document.getElementById('editorSkeleton').classList.add('hidden');
+                        document.getElementById('headlineSkeleton').classList.add('hidden');
+                        document.getElementById('emailSkeleton').classList.add('hidden');
+
+                        // Confetti explosion
+                        if (typeof confetti === 'function' && !confettiFired) {
+                            confetti({
+                                particleCount: 120,
+                                spread: 80,
+                                origin: { y: 0.65 }
+                            });
+                            confettiFired = true;
+                        }
+
+                        setTimeout(() => {
+                            document.getElementById('inline-progress-card').style.display = 'none';
+                            document.getElementById('generation-success-badge').style.display = 'inline-flex';
+                            
+                            // Re-enable and reset next step buttons
+                            const btnGen = document.getElementById('btn-wizard-gen');
+                            btnGen.disabled = false;
+                            btnGen.innerHTML = '⚡ Generate AI Assets';
+                            
+                            // Enable next step button
+                            updateWizardNavButtons();
+                            showToast("Campaign assets successfully generated!", '✓');
+                        }, 1200);
+
+                    } else if (state.status === 'failed') {
+                        clearInterval(pollTimer);
+                        
+                        document.getElementById('inline-progress-card').style.display = 'none';
+                        
+                        // Hide Skeletons
+                        document.getElementById('editorSkeleton').classList.add('hidden');
+                        document.getElementById('headlineSkeleton').classList.add('hidden');
+                        document.getElementById('emailSkeleton').classList.add('hidden');
+                        
+                        // Reset button
+                        const btnGen = document.getElementById('btn-wizard-gen');
+                        btnGen.disabled = false;
+                        btnGen.innerHTML = '⚡ Generate AI Assets';
+
+                        // Show error card
+                        document.getElementById('inline-error-card').style.display = 'block';
+                        document.getElementById('inline-error-text').textContent = state.errors.workflow_error || "AI generation run failed.";
+                        showToast(state.errors.workflow_error || "Generative pipeline failed", '⚠️');
+                    } else {
+                        // Mark final step active if previous elements are ready
+                        if (completedSteps === 4) {
+                            stageFinal.className = 'stage-item running';
+                            document.getElementById('inline-progress-status').textContent = 'Finalizing index keywords and asset caching...';
+                        }
+                    }
+                } catch (e) {
+                    // ignore networking glitches
+                }
+            }, 2500);
+        }
+
+        // Prepopulate wizard inputs with existing database records
+        function populateWizardState(state) {
+            generatedState = state;
+            
+            // Description HTML
+            const desc = state.generated_description || "";
+            document.getElementById('editorCode').innerHTML = highlightHTML(desc);
+            updateEditorLineNumbers(desc);
+            if (desc) {
+                document.getElementById('editorSkeleton').classList.add('hidden');
+            }
+            
+            // Headline & Email
+            const marketing = state.marketing_assets || state.marketing || {};
+            document.getElementById('headlineText').textContent = marketing.campaign_headline || "";
+            if (marketing.campaign_headline) {
+                document.getElementById('headlineSkeleton').classList.add('hidden');
+            }
+
+            document.getElementById('emailSubjectLine').textContent = marketing.email_subject || 'Booking Confirmation';
+            document.getElementById('emailClientBody').textContent = marketing.email_body || "";
+            if (marketing.email_body) {
+                document.getElementById('emailSkeleton').classList.add('hidden');
+            }
+
+            // Imagery previews
+            const imgPrompts = state.image_prompts || {};
+            document.getElementById('previewImgPrompts').textContent = `Hero Prompt:\n${imgPrompts.hero || 'N/A'}\n\nLifestyle Prompt:\n${imgPrompts.lifestyle || 'N/A'}`;
+            
+            const imagePaths = state.image_paths || [];
+            let heroUrl = "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=300";
+            let lifeUrl = "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=300";
+            
+            imagePaths.forEach(p => {
+                const basename = p.split(/[\\/]/).pop();
+                const url = `${API_BASE}/outputs/images/${basename}`;
+                if (basename.includes("hero")) heroUrl = url;
+                if (basename.includes("lifestyle")) lifeUrl = url;
+            });
+            document.getElementById('previewImgHero').src = heroUrl;
+            document.getElementById('previewImgLife').src = lifeUrl;
+
+            // SEO previews
+            const seo = state.seo_metadata || {};
+            document.getElementById('previewSeoTitle').textContent = seo.title || "N/A";
+            document.getElementById('previewSeoDesc').textContent = seo.description || "N/A";
+            document.getElementById('previewSeoKeywords').textContent = `Keywords: ${seo.keywords || 'N/A'}\nSlug: ${seo.slug || 'N/A'}`;
+
+            // Pre-fill fields if edited
+            document.getElementById('wName').value = state.product_name || '';
+            document.getElementById('wDesc').value = state.raw_description || '';
+        }
+
+        // Publish Campaign
+        async function publishCampaign() {
+            if (!activeWorkshopId) return;
+
+            const actionsBox = document.getElementById('wizard-publish-actions');
+            const statusBox = document.getElementById('live-publish-status-box');
+            const statusText = document.getElementById('publish-flow-step');
+            const statusFill = document.getElementById('publish-flow-fill');
+
+            actionsBox.style.display = 'none';
+            statusBox.style.display = 'block';
+            statusText.textContent = "Publishing live product on Shopify store...";
+            statusFill.style.width = '30%';
+
+            try {
+                const res = await fetch(`${API_BASE}/api/workshops/${activeWorkshopId}/publish`, { method: 'POST' });
+                if (!res.ok) throw new Error("Shopify publisher failed to trigger.");
+                const data = await res.json();
+                
+                // Poll publish session status
+                pollPublishWorkflow(data.session_id);
+            } catch (e) {
+                statusBox.style.display = 'none';
+                actionsBox.style.display = 'flex';
+                showToast(e.message || "Failed to publish workshop campaign", '⚠️');
+            }
+        }
+
+        function pollPublishWorkflow(sessionId) {
+            const statusText = document.getElementById('publish-flow-step');
+            const statusFill = document.getElementById('publish-flow-fill');
+            const verifyBox = document.getElementById('live-verification-results');
+            const verifyText = document.getElementById('verification-text');
+            const actionsBox = document.getElementById('wizard-publish-actions');
+
+            const timer = setInterval(async () => {
+                try {
+                    const res = await fetch(`${API_BASE}/status/${sessionId}`);
+                    if (!res.ok) return;
+                    const state = await res.json();
+
+                    if (state.status === 'completed') {
+                        clearInterval(timer);
+                        statusFill.style.width = '100%';
+                        statusText.textContent = "Listing verified successfully!";
+                        
+                        // Populate verification box
+                        verifyBox.style.display = 'block';
+                        const v = state.verification_result || {};
+                        verifyText.innerHTML = `
+                            Status: PASSED ✓<br>
+                            Shopify Product ID: ${state.shopify_product_id || 'N/A'}<br>
+                            Shopify Variant ID: ${state.shopify_variant_id || 'N/A'}<br>
+                            Live Store URL: <a href="${state.shopify_url}" target="_blank" style="color:var(--primary);">${state.shopify_url}</a><br><br>
+                            <strong>Live Checks:</strong><br>
+                            - Listing Active: ${v.status_active ? 'Yes':'No'}<br>
+                            - Price Match: ${v.price_matched ? 'Yes':'No'}<br>
+                            - Purchasable: ${v.purchasable ? 'Yes':'No'}
+                        `;
+
+                        // Add action button to view final landing page
+                        actionsBox.style.display = 'flex';
+                        actionsBox.innerHTML = `
+                            <a href="/workshops/${activeWorkshopId}" target="_blank" class="btn btn-primary">🌐 VIEW LIVE WORKSHOP LANDING PAGE</a>
+                            <button class="btn btn-secondary" onclick="switchTab('dashboard')">Back to Dashboard</button>
+                        `;
+                        showToast("Campaign published and listing verified!", '✓');
+
+                    } else if (state.status === 'failed') {
+                        clearInterval(timer);
+                        statusText.textContent = "Publish pipeline failed.";
+                        statusFill.style.backgroundColor = 'var(--red)';
+                        statusFill.style.width = '100%';
+
+                        verifyBox.style.display = 'block';
+                        verifyText.innerHTML = `<span style="color:var(--red);">Error during publication run:</span><br>${state.errors.workflow_error || 'Unknown error'}`;
+                        actionsBox.style.display = 'flex';
+                    } else {
+                        // Running - update shimmers
+                        statusFill.style.width = '65%';
+                        statusText.textContent = "Running live checkout verification checks...";
+                    }
+                } catch (e) {}
+            }, 3000);
+        }
+
+        // Jump to generated workshop screen
+        async function jumpToGeneratedCampaign(workshopId) {
+            activeWorkshopId = workshopId;
+            switchTab('create');
+            
+            // Fetch workshop details to populate step fields
+            try {
+                const res = await fetch(`${API_BASE}/api/workshops/${workshopId}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    
+                    // Create mock state to represent generated results
+                    const stateObj = {
+                        product_name: data.name,
+                        raw_description: data.description,
+                        generated_description: data.generated_description,
+                        seo_metadata: data.seo_metadata,
+                        marketing_assets: data.marketing,
+                        image_prompts: data.image_prompts,
+                        image_paths: data.image_paths,
+                        shopify_variant_id: data.shopify_variant_id,
+                        shopify_url: data.shopify_url,
+                    };
+                    
+                    populateWizardState(stateObj);
+                    jumpToStep(2);
+                }
+            } catch (e) {
+                showToast("Failed to fetch generated campaign details", '⚠️');
+            }
+        }
+
+        // Load draft campaigns
+        async function loadAndEditDraft(workshopId) {
+            activeWorkshopId = workshopId;
+            switchTab('create');
+            
+            try {
+                const res = await fetch(`${API_BASE}/api/workshops/${workshopId}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    
+                    document.getElementById('wName').value = data.name || '';
+                    document.getElementById('wDesc').value = data.description || '';
+                    document.getElementById('wDate').value = data.date || '';
+                    document.getElementById('wTime').value = data.time || '';
+                    document.getElementById('wDuration').value = data.duration || '';
+                    document.getElementById('wAge').value = data.age_group || '';
+                    document.getElementById('wVenue').value = data.venue || '';
+                    document.getElementById('wPrice').value = data.price || 0;
+                    document.getElementById('wSalesEmail').value = data.sales_team_email || '';
+                    document.getElementById('wPoster').value = data.poster_path || '';
+                    
+                    jumpToStep(1);
+                }
+            } catch (e) {
+                showToast("Failed to fetch workshop draft", '⚠️');
+            }
+        }
+
+        function resetCampaignCreation() {
+            activeWorkshopId = null;
+            generatedState = null;
+            document.getElementById('createForm').reset();
+            document.getElementById('btn-wizard-gen').disabled = false;
+            jumpToStep(1);
+        }
+    </script>
+</body>
+</html>

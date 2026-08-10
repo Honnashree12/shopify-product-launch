@@ -5,506 +5,592 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Launch Console — AI Shopify Product Launch Agent</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --ink:#0B0E14;
-    --panel:#12161F;
-    --panel-2:#161B26;
-    --border:#232A38;
-    --border-soft:#1B212D;
-    --text-hi:#EDEFF4;
-    --text-lo:#7C8494;
-    --text-dim:#4B5263;
-    --amber:#F0A202;
-    --amber-glow:rgba(240,162,2,0.35);
-    --green:#3DDC84;
-    --green-glow:rgba(61,220,132,0.35);
-    --red:#F1493D;
-    --red-glow:rgba(241,73,61,0.3);
-    --radius:10px;
+  :root {
+    --bg-dark: #05070f;
+    --bg-card: rgba(13, 17, 30, 0.7);
+    --bg-card-hover: rgba(20, 26, 46, 0.85);
+    --border: rgba(255, 255, 255, 0.08);
+    --border-glow: rgba(99, 102, 241, 0.2);
+    --text-hi: #f3f4f6;
+    --text-lo: #9ca3af;
+    --text-dim: #4b5563;
+    --primary: #6366f1;
+    --primary-glow: rgba(99, 102, 241, 0.35);
+    --amber: #f59e0b;
+    --amber-glow: rgba(245, 158, 11, 0.25);
+    --green: #10b981;
+    --green-glow: rgba(16, 185, 129, 0.25);
+    --red: #ef4444;
+    --red-glow: rgba(239, 68, 68, 0.2);
+    --radius: 16px;
+    --font-outfit: 'Outfit', sans-serif;
   }
 
-  *{ box-sizing:border-box; }
+  * { box-sizing: border-box; }
 
-  html,body{
-    margin:0; padding:0;
-    background:var(--ink);
-    color:var(--text-hi);
-    font-family:'Inter',sans-serif;
-    min-height:100vh;
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg-dark);
+    color: var(--text-hi);
+    font-family: 'Outfit', sans-serif;
+    min-height: 100vh;
   }
 
-  body{
+  body {
     background-image:
-      radial-gradient(circle at 15% 0%, rgba(240,162,2,0.06), transparent 45%),
-      radial-gradient(circle at 85% 100%, rgba(61,220,132,0.05), transparent 45%);
+      radial-gradient(circle at 10% 10%, rgba(99, 102, 241, 0.12), transparent 40%),
+      radial-gradient(circle at 90% 90%, rgba(16, 185, 129, 0.08), transparent 45%);
+    background-attachment: fixed;
   }
 
-  ::selection{ background:var(--amber); color:#1a1200; }
+  /* Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
 
-  .wrap{
-    max-width:1180px;
-    margin:0 auto;
-    padding:28px 24px 80px;
+  ::selection { background: var(--primary); color: #fff; }
+
+  .wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 24px 80px;
   }
 
   /* ---------- Header ---------- */
-  header{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding-bottom:22px;
-    border-bottom:1px solid var(--border-soft);
-    margin-bottom:28px;
-    flex-wrap:wrap;
-    gap:14px;
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 36px;
+    flex-wrap: wrap;
+    gap: 16px;
+    backdrop-filter: blur(10px);
   }
 
-  .brand{
-    display:flex;
-    align-items:center;
-    gap:12px;
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
   }
 
-  .brand-mark{
-    width:34px; height:34px;
-    border-radius:8px;
-    background:linear-gradient(145deg, var(--amber), #b97400);
-    display:flex; align-items:center; justify-content:center;
-    font-family:'Space Grotesk',sans-serif;
-    font-weight:700;
-    font-size:15px;
-    color:#1a1200;
-    box-shadow:0 0 0 1px rgba(255,255,255,0.08) inset, 0 4px 14px var(--amber-glow);
-    flex-shrink:0;
+  .brand-mark {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--primary), #4f46e5);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    color: #fff;
+    box-shadow: 0 0 20px var(--primary-glow), inset 0 1px 1px rgba(255,255,255,0.2);
+    flex-shrink: 0;
   }
 
-  .brand-text h1{
-    font-family:'Space Grotesk',sans-serif;
-    font-size:17px;
-    font-weight:600;
-    margin:0;
-    letter-spacing:0.2px;
+  .brand-text h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 19px;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: -0.2px;
   }
 
-  .brand-text p{
-    margin:2px 0 0;
-    font-size:12px;
-    color:var(--text-lo);
-    font-family:'JetBrains Mono',monospace;
+  .brand-text p {
+    margin: 2px 0 0;
+    font-size: 12px;
+    color: var(--text-lo);
+    font-family: 'JetBrains Mono', monospace;
   }
 
-  .store-badge{
-    display:flex;
-    align-items:center;
-    gap:9px;
-    padding:8px 14px;
-    background:var(--panel);
-    border:1px solid var(--border);
-    border-radius:20px;
-    font-family:'JetBrains Mono',monospace;
-    font-size:12.5px;
-    color:var(--text-lo);
+  .store-badge {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 30px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-lo);
+    backdrop-filter: blur(10px);
   }
 
-  .dot{
-    width:7px; height:7px;
-    border-radius:50%;
-    background:var(--text-dim);
-    flex-shrink:0;
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--text-dim);
+    flex-shrink: 0;
+    transition: all 0.3s;
   }
-  .dot.live{ background:var(--green); box-shadow:0 0 0 3px var(--green-glow); animation:pulse-dot 2s infinite; }
-  .dot.down{ background:var(--red); box-shadow:0 0 0 3px var(--red-glow); }
+  .dot.live { background: var(--green); box-shadow: 0 0 12px var(--green); animation: pulse-dot 2s infinite; }
+  .dot.down { background: var(--red); box-shadow: 0 0 12px var(--red); }
 
-  @keyframes pulse-dot{
-    0%,100%{ opacity:1; }
-    50%{ opacity:0.45; }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.45; transform: scale(0.85); }
   }
 
   /* ---------- Layout ---------- */
-  .grid{
-    display:grid;
-    grid-template-columns:360px 1fr;
-    gap:20px;
-    align-items:start;
+  .grid {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 28px;
+    align-items: start;
   }
 
-  @media (max-width:860px){
-    .grid{ grid-template-columns:1fr; }
+  @media (max-width: 900px) {
+    .grid { grid-template-columns: 1fr; }
   }
 
-  .panel{
-    background:var(--panel);
-    border:1px solid var(--border);
-    border-radius:var(--radius);
-    padding:22px;
+  .panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    backdrop-filter: blur(16px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    transition: border-color 0.3s, box-shadow 0.3s;
   }
 
-  .panel-label{
-    font-family:'JetBrains Mono',monospace;
-    font-size:11px;
-    letter-spacing:1.5px;
-    text-transform:uppercase;
-    color:var(--text-dim);
-    margin:0 0 16px;
-    display:flex;
-    align-items:center;
-    gap:8px;
+  .panel:hover {
+    border-color: rgba(255, 255, 255, 0.12);
   }
 
-  .panel-label::before{
-    content:'';
-    width:14px; height:1px;
-    background:var(--text-dim);
+  .panel-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--primary);
+    margin: 0 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+  }
+
+  .panel-label::before {
+    content: '';
+    width: 16px; height: 2px;
+    background: var(--primary);
+    border-radius: 1px;
   }
 
   /* ---------- Form ---------- */
-  .field{ margin-bottom:16px; }
+  .field { margin-bottom: 20px; }
 
-  .field label{
-    display:block;
-    font-size:12.5px;
-    color:var(--text-lo);
-    margin-bottom:7px;
-    font-weight:500;
+  .field label {
+    display: block;
+    font-size: 13px;
+    color: var(--text-lo);
+    margin-bottom: 8px;
+    font-weight: 500;
   }
 
-  .field input, .field textarea{
-    width:100%;
-    background:var(--panel-2);
-    border:1px solid var(--border);
-    border-radius:7px;
-    padding:10px 12px;
-    color:var(--text-hi);
-    font-family:'Inter',sans-serif;
-    font-size:13.5px;
-    outline:none;
-    transition:border-color .15s, box-shadow .15s;
-    resize:vertical;
+  .field input, .field textarea {
+    width: 100%;
+    background: rgba(10, 12, 22, 0.5);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    color: var(--text-hi);
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    resize: vertical;
   }
 
-  .field textarea{ min-height:78px; line-height:1.5; }
+  .field textarea { min-height: 90px; line-height: 1.5; }
 
-  .field input:focus, .field textarea:focus{
-    border-color:var(--amber);
-    box-shadow:0 0 0 3px var(--amber-glow);
+  .field input:focus, .field textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-glow);
+    background: rgba(10, 12, 22, 0.8);
   }
 
-  .row-2{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:12px;
+  .row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
   }
 
-  .price-input{ position:relative; }
-  .price-input span{
-    position:absolute; left:12px; top:50%; transform:translateY(-50%);
-    color:var(--text-dim); font-size:13px; font-family:'JetBrains Mono',monospace;
-    pointer-events:none;
+  .price-input { position: relative; }
+  .price-input span {
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    color: var(--text-lo); font-size: 14px; font-family: 'JetBrains Mono', monospace;
+    pointer-events: none;
   }
-  .price-input input{ padding-left:26px; }
+  .price-input label + span {
+    top: calc(50% + 12px);
+  }
+  .price-input input { padding-left: 28px; }
 
-  button.launch-btn{
-    width:100%;
-    margin-top:6px;
-    background:var(--amber);
-    color:#1a1200;
-    border:none;
-    border-radius:7px;
-    padding:13px 16px;
-    font-family:'Space Grotesk',sans-serif;
-    font-weight:700;
-    font-size:14px;
-    letter-spacing:0.2px;
-    cursor:pointer;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:8px;
-    transition:transform .12s, box-shadow .12s, opacity .12s;
-    box-shadow:0 4px 16px var(--amber-glow);
+  button.launch-btn {
+    width: 100%;
+    margin-top: 10px;
+    background: linear-gradient(135deg, var(--primary) 0%, #4f46e5 100%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 14px 20px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.2px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 20px var(--primary-glow);
   }
 
-  button.launch-btn:hover:not(:disabled){ transform:translateY(-1px); box-shadow:0 6px 22px var(--amber-glow); }
-  button.launch-btn:active:not(:disabled){ transform:translateY(0); }
-  button.launch-btn:disabled{ opacity:0.55; cursor:not-allowed; box-shadow:none; }
+  button.launch-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 26px var(--primary-glow);
+    opacity: 0.95;
+  }
+  button.launch-btn:active:not(:disabled) { transform: translateY(0); }
+  button.launch-btn:disabled { opacity: 0.55; cursor: not-allowed; box-shadow: none; }
 
-  .hint{
-    font-size:11.5px;
-    color:var(--text-dim);
-    margin-top:10px;
-    line-height:1.5;
+  .hint {
+    font-size: 12px;
+    color: var(--text-lo);
+    margin-top: 14px;
+    line-height: 1.6;
+    opacity: 0.8;
   }
 
   /* ---------- Pipeline rail ---------- */
-  .rail-wrap{ margin-bottom:6px; }
+  .rail-wrap { margin-bottom: 28px; }
 
-  .rail{
-    display:flex;
-    align-items:flex-start;
-    justify-content:space-between;
-    position:relative;
-    padding:6px 4px 0;
+  .rail {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    position: relative;
+    padding: 10px 4px 0;
   }
 
-  .rail-line{
-    position:absolute;
-    top:23px; left:26px; right:26px;
-    height:2px;
-    background:var(--border);
-    z-index:0;
-    overflow:hidden;
-    border-radius:2px;
+  .rail-line {
+    position: absolute;
+    top: 32px; left: 36px; right: 36px;
+    height: 3px;
+    background: rgba(255,255,255,0.06);
+    z-index: 0;
+    overflow: hidden;
+    border-radius: 4px;
   }
 
-  .rail-line-fill{
-    height:100%;
-    width:0%;
-    background:linear-gradient(90deg, var(--amber), var(--green));
-    transition:width .5s ease;
+  .rail-line-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--primary), var(--green));
+    transition: width .5s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .rail-node{
-    position:relative;
-    z-index:1;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:9px;
-    width:70px;
-    text-align:center;
+  .rail-node {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 80px;
+    text-align: center;
   }
 
-  .lamp{
-    width:46px; height:46px;
-    border-radius:50%;
-    background:var(--panel-2);
-    border:1.5px solid var(--border);
-    display:flex; align-items:center; justify-content:center;
-    font-family:'JetBrains Mono',monospace;
-    font-size:13px;
-    font-weight:600;
-    color:var(--text-dim);
-    transition:all .3s ease;
+  .lamp {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: rgba(13, 17, 30, 0.8);
+    border: 1.5px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-lo);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .lamp.active{
-    border-color:var(--amber);
-    color:var(--amber);
-    box-shadow:0 0 0 5px var(--amber-glow);
-    animation:pulse-lamp 1.4s infinite;
+  .lamp.active {
+    border-color: var(--primary);
+    color: var(--primary);
+    box-shadow: 0 0 15px var(--primary-glow);
+    animation: pulse-lamp 1.4s infinite;
   }
 
-  .lamp.done{
-    background:var(--green);
-    border-color:var(--green);
-    color:#0a1f13;
-    box-shadow:0 0 0 5px var(--green-glow);
+  .lamp.done {
+    background: var(--green);
+    border-color: var(--green);
+    color: #052e16;
+    font-weight: 700;
+    box-shadow: 0 0 15px var(--green-glow);
   }
 
-  .lamp.failed{
-    background:var(--red);
-    border-color:var(--red);
-    color:#2a0906;
-    box-shadow:0 0 0 5px var(--red-glow);
+  .lamp.failed {
+    background: var(--red);
+    border-color: var(--red);
+    color: #fff;
+    box-shadow: 0 0 15px var(--red-glow);
   }
 
-  @keyframes pulse-lamp{
-    0%,100%{ box-shadow:0 0 0 5px var(--amber-glow); }
-    50%{ box-shadow:0 0 0 9px transparent; }
+  @keyframes pulse-lamp {
+    0%, 100% { box-shadow: 0 0 0 4px var(--primary-glow); }
+    50% { box-shadow: 0 0 0 8px transparent; }
   }
 
-  .rail-node .stage-name{
-    font-size:11px;
-    font-weight:600;
-    color:var(--text-lo);
+  .rail-node .stage-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-lo);
+    transition: color 0.3s;
   }
   .rail-node.is-current .stage-name,
-  .rail-node.is-done .stage-name{ color:var(--text-hi); }
+  .rail-node.is-done .stage-name { color: var(--text-hi); }
 
-  .rail-node .stage-sub{
-    font-size:9.5px;
-    color:var(--text-dim);
-    font-family:'JetBrains Mono',monospace;
+  .rail-node .stage-sub {
+    font-size: 10px;
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
   }
 
-  @media (max-width:640px){
-    .rail{ overflow-x:auto; padding-bottom:8px; }
-    .rail-node{ width:58px; flex-shrink:0; }
-    .rail-line{ left:23px; right:23px; }
+  @media (max-width: 640px) {
+    .rail { overflow-x: auto; padding-bottom: 12px; }
+    .rail-node { width: 70px; flex-shrink: 0; }
+    .rail-line { left: 30px; right: 30px; }
   }
 
   /* ---------- Result area ---------- */
-  .result-panel{ margin-top:20px; }
+  .result-panel { margin-top: 24px; }
 
-  .empty-state{
-    padding:46px 20px;
-    text-align:center;
-    color:var(--text-dim);
+  .empty-state {
+    padding: 60px 20px;
+    text-align: center;
+    color: var(--text-lo);
+    border: 1px dashed rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, 0.01);
   }
 
-  .empty-state .glyph{
-    font-family:'Space Grotesk',sans-serif;
-    font-size:28px;
-    color:var(--text-dim);
-    margin-bottom:10px;
-    opacity:0.6;
+  .empty-state .glyph {
+    font-size: 32px;
+    color: var(--primary);
+    margin-bottom: 16px;
+    opacity: 0.8;
   }
 
-  .empty-state p{
-    font-size:13px;
-    margin:0;
-    line-height:1.6;
+  .empty-state p {
+    font-size: 14px;
+    margin: 0;
+    line-height: 1.6;
   }
 
-  .status-line{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    font-family:'JetBrains Mono',monospace;
-    font-size:12.5px;
-    color:var(--text-lo);
-    margin-bottom:18px;
-    padding-bottom:16px;
-    border-bottom:1px solid var(--border-soft);
+  .status-line {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--text-lo);
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
   }
 
-  .status-pill{
-    padding:3px 10px;
-    border-radius:20px;
-    font-size:10.5px;
-    font-weight:600;
-    letter-spacing:0.5px;
-    text-transform:uppercase;
+  .status-pill {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
   }
-  .status-pill.pending{ background:rgba(240,162,2,0.15); color:var(--amber); }
-  .status-pill.running{ background:rgba(240,162,2,0.15); color:var(--amber); }
-  .status-pill.completed{ background:rgba(61,220,132,0.15); color:var(--green); }
-  .status-pill.failed{ background:rgba(241,73,61,0.15); color:var(--red); }
+  .status-pill.pending { background: rgba(245, 158, 11, 0.15); color: var(--amber); }
+  .status-pill.running { background: rgba(99, 102, 241, 0.15); color: var(--primary); }
+  .status-pill.completed { background: rgba(16, 185, 129, 0.15); color: var(--green); }
+  .status-pill.failed { background: rgba(239, 68, 68, 0.15); color: var(--red); }
 
-  .card-grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:14px;
-    margin-top:18px;
-  }
-
-  @media (max-width:640px){ .card-grid{ grid-template-columns:1fr; } }
-
-  .mini-card{
-    background:var(--panel-2);
-    border:1px solid var(--border);
-    border-radius:8px;
-    padding:16px;
+  .card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 24px;
   }
 
-  .mini-card h3{
-    font-family:'Space Grotesk',sans-serif;
-    font-size:13px;
-    margin:0 0 10px;
-    display:flex;
-    align-items:center;
-    gap:7px;
+  @media (max-width: 700px) { .card-grid { grid-template-columns: 1fr; } }
+
+  .mini-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    transition: all 0.3s;
   }
 
-  .mini-card h3 .ok{ color:var(--green); }
-  .mini-card h3 .bad{ color:var(--red); }
-
-  .mini-card p, .mini-card li{
-    font-size:12.5px;
-    color:var(--text-lo);
-    line-height:1.6;
-    margin:0;
+  .mini-card:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.15);
   }
 
-  .check-list{ list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:7px; }
-  .check-list li{ display:flex; align-items:center; gap:8px; font-size:12px; }
-  .check-list .icon{ font-family:'JetBrains Mono',monospace; font-size:12px; width:14px; }
-  .check-list .icon.pass{ color:var(--green); }
-  .check-list .icon.fail{ color:var(--red); }
-
-  .product-hero{
-    grid-column:1 / -1;
-    background:linear-gradient(150deg, var(--panel-2), var(--panel));
-    border:1px solid var(--border);
-    border-radius:8px;
-    padding:20px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:18px;
-    flex-wrap:wrap;
+  .mini-card h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    margin: 0 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
   }
 
-  .product-hero .info h3{
-    font-family:'Space Grotesk',sans-serif;
-    font-size:17px;
-    margin:0 0 6px;
+  .mini-card h3 .ok { color: var(--green); }
+  .mini-card h3 .bad { color: var(--red); }
+
+  .mini-card p, .mini-card li {
+    font-size: 13.5px;
+    color: var(--text-lo);
+    line-height: 1.6;
+    margin: 0;
   }
 
-  .product-hero .info .price{
-    font-family:'JetBrains Mono',monospace;
-    color:var(--green);
-    font-size:14px;
-    font-weight:600;
+  .check-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+  .check-list li { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+  .check-list .icon { font-family: 'JetBrains Mono', monospace; font-size: 13px; width: 16px; }
+  .check-list .icon.pass { color: var(--green); }
+  .check-list .icon.fail { color: var(--red); }
+
+  .product-hero {
+    grid-column: 1 / -1;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
   }
 
-  .product-hero .info .tag-row{
-    display:flex; flex-wrap:wrap; gap:6px; margin-top:10px;
+  .product-hero .info h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px;
+    margin: 0 0 8px;
+    font-weight: 700;
   }
 
-  .tag{
-    font-size:10.5px;
-    font-family:'JetBrains Mono',monospace;
-    color:var(--text-lo);
-    background:var(--panel);
-    border:1px solid var(--border);
-    padding:3px 8px;
-    border-radius:5px;
+  .product-hero .info .price {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--green);
+    font-size: 15px;
+    font-weight: 600;
   }
 
-  .view-btn{
-    background:var(--green);
-    color:#0a1f13;
-    text-decoration:none;
-    font-family:'Space Grotesk',sans-serif;
-    font-weight:700;
-    font-size:13px;
-    padding:11px 18px;
-    border-radius:7px;
-    white-space:nowrap;
-    box-shadow:0 4px 16px var(--green-glow);
-    transition:transform .12s;
-  }
-  .view-btn:hover{ transform:translateY(-1px); }
-
-  .error-card{
-    background:rgba(241,73,61,0.08);
-    border:1px solid rgba(241,73,61,0.3);
-    border-radius:8px;
-    padding:16px;
-    margin-top:18px;
-    font-family:'JetBrains Mono',monospace;
-    font-size:12.5px;
-    color:#ff9a92;
-    line-height:1.6;
+  .product-hero .info .tag-row {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px;
   }
 
-  .session-id{
-    font-family:'JetBrains Mono',monospace;
-    font-size:11px;
-    color:var(--text-dim);
+  .tag {
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-lo);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 6px;
   }
 
-  .spinner{
-    width:11px; height:11px;
-    border-radius:50%;
-    border:2px solid var(--border);
-    border-top-color:var(--amber);
-    animation:spin 0.8s linear infinite;
+  .view-btn {
+    background: linear-gradient(135deg, var(--green) 0%, #059669 100%);
+    color: #fff;
+    text-decoration: none;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 12px 24px;
+    border-radius: 8px;
+    white-space: nowrap;
+    box-shadow: 0 4px 15px var(--green-glow);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  @keyframes spin{ to{ transform:rotate(360deg); } }
+  .view-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px var(--green-glow);
+  }
+
+  .error-card {
+    background: rgba(239, 68, 68, 0.05);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-top: 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: #fecaca;
+    line-height: 1.6;
+  }
+
+  .session-id {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  .spinner {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.2);
+    border-top-color: #fff;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Tabs Styling */
+  .tab-item {
+    font-family: var(--font-outfit);
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 13px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    color: var(--text-lo);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid transparent;
+  }
+  .tab-item:hover {
+    color: var(--text-hi);
+    border-color: var(--border);
+  }
+  .tab-item.active {
+    color: var(--primary);
+    background: var(--primary-glow);
+    border-color: var(--primary);
+    box-shadow: 0 0 12px var(--primary-glow);
+  }
+  
+  /* Dropzone Styling */
+  #dropZone:hover {
+    border-color: var(--primary) !important;
+    background: rgba(99, 102, 241, 0.05) !important;
+    box-shadow: 0 0 15px var(--primary-glow);
+  }
 </style>
 </head>
 <body>
@@ -518,9 +604,12 @@
         <p>AI Shopify Product Launch Agent · Google ADK</p>
       </div>
     </div>
-    <div class="store-badge">
-      <span class="dot" id="healthDot"></span>
-      <span id="healthText">checking API…</span>
+    <div style="display: flex; align-items: center; gap: 16px;">
+      <a href="/static/admin.html" style="color: var(--primary); text-decoration: none; font-size: 13px; font-weight: 600; border: 1px solid var(--border); padding: 8px 16px; border-radius: 20px; background-color: var(--bg-card); transition: all 0.2s;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">Workshops Platform ➔</a>
+      <div class="store-badge">
+        <span class="dot" id="healthDot"></span>
+        <span id="healthText">checking API…</span>
+      </div>
     </div>
   </header>
 
@@ -530,33 +619,62 @@
     <div class="panel">
       <p class="panel-label">New Launch</p>
 
-      <div class="field">
-        <label for="productName">Product name</label>
-        <input type="text" id="productName" placeholder="Wireless Bluetooth Earbuds" />
+      <!-- Tabs for Campaign vs Folder launch -->
+      <div style="display: flex; gap: 10px; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
+        <span id="tabCampaign" class="tab-item active" onclick="switchTab('campaign')">Launch Campaign</span>
+        <span id="tabFolder" class="tab-item" onclick="switchTab('folder')">Create from Folder</span>
       </div>
 
-      <div class="field">
-        <label for="rawDescription">Raw description</label>
-        <textarea id="rawDescription" placeholder="Experience premium sound with ENC noise cancellation and 30-hour battery life."></textarea>
-      </div>
-
-      <div class="row-2">
-        <div class="field price-input">
-          <label for="price">Price</label>
-          <span>₹</span>
-          <input type="number" id="price" placeholder="2499" min="0" step="0.01" />
-        </div>
+      <!-- Campaign Fields Wrapper -->
+      <div id="campaignFields">
         <div class="field">
-          <label for="category">Category</label>
-          <input type="text" id="category" placeholder="Electronics" />
+          <label for="productName">Product name</label>
+          <input type="text" id="productName" placeholder="Wireless Bluetooth Earbuds" />
         </div>
+
+        <div class="field">
+          <label for="rawDescription">Raw description</label>
+          <textarea id="rawDescription" placeholder="Experience premium sound with ENC noise cancellation and 30-hour battery life."></textarea>
+        </div>
+
+        <div class="row-2">
+          <div class="field price-input">
+            <label for="price">Price</label>
+            <span>₹</span>
+            <input type="number" id="price" placeholder="2499" min="0" step="0.01" />
+          </div>
+          <div class="field">
+            <label for="category">Category</label>
+            <input type="text" id="category" placeholder="Electronics" />
+          </div>
+        </div>
+
+        <button class="launch-btn" id="launchBtn" onclick="launchProduct()">
+          <span id="launchBtnText">Launch product</span>
+        </button>
+
+        <p class="hint">Runs the full agent pipeline — Copywriter → SEO → Marketing → Publisher → Verification → Report — and publishes to your connected Shopify store.</p>
       </div>
 
-      <button class="launch-btn" id="launchBtn" onclick="launchProduct()">
-        <span id="launchBtnText">Launch product</span>
-      </button>
+      <!-- Folder Fields Wrapper -->
+      <div id="folderUploadSection" style="display: none;">
+        <div class="field">
+          <label>Select Product Folder</label>
+          <div style="position: relative; border: 2px dashed var(--border); border-radius: 12px; padding: 32px 16px; text-align: center; background: rgba(10, 12, 22, 0.3); transition: all 0.3s; cursor: pointer;" id="dropZone" onclick="document.getElementById('folderInput').click()">
+            <span style="font-size: 32px; color: var(--primary); display: block; margin-bottom: 10px;">📁</span>
+            <span style="font-size: 14px; color: var(--text-hi); font-weight: 600;">Click to select folder</span>
+            <p style="font-size: 11px; color: var(--text-lo); margin: 6px 0 0;">Upload folder with product.json, images/, videos/...</p>
+            <input type="file" id="folderInput" webkitdirectory directory multiple style="display: none;" onchange="handleFolderSelect(event)" />
+          </div>
+          <div id="selectedFolderInfo" style="margin-top: 14px; font-size: 12px; color: var(--green); display: none; font-family: 'JetBrains Mono', monospace; text-align: left; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.15); padding: 10px 14px; border-radius: 8px; line-height: 1.6;"></div>
+        </div>
 
-      <p class="hint">Runs the full agent pipeline — Copywriter → SEO → Marketing → Publisher → Verification → Report — and publishes to your connected Shopify store.</p>
+        <button class="launch-btn" id="launchFolderBtn" onclick="launchFolderProduct()">
+          <span id="launchFolderBtnText">Launch from Folder</span>
+        </button>
+
+        <p class="hint">Ingests, extracts, validates, uploads media files resiliently (via staged uploads), creates the Shopify product, and verifies live listing.</p>
+      </div>
     </div>
 
     <!-- RIGHT: Pipeline + results -->
@@ -568,23 +686,23 @@
           <div class="rail-line"><div class="rail-line-fill" id="railFill"></div></div>
           <div class="rail-node" data-stage="1">
             <div class="lamp" id="lamp1">01</div>
-            <div class="stage-name">Copywriter</div>
-            <div class="stage-sub">description</div>
+            <div class="stage-name">Ingest</div>
+            <div class="stage-sub">extract</div>
           </div>
           <div class="rail-node" data-stage="2">
             <div class="lamp" id="lamp2">02</div>
-            <div class="stage-name">SEO</div>
-            <div class="stage-sub">metadata</div>
+            <div class="stage-name">Validate</div>
+            <div class="stage-sub">check structure</div>
           </div>
           <div class="rail-node" data-stage="3">
             <div class="lamp" id="lamp3">03</div>
-            <div class="stage-name">Marketing</div>
-            <div class="stage-sub">strategy</div>
+            <div class="stage-name">Create</div>
+            <div class="stage-sub">Shopify basic</div>
           </div>
           <div class="rail-node" data-stage="4">
             <div class="lamp" id="lamp4">04</div>
-            <div class="stage-name">Publisher</div>
-            <div class="stage-sub">Shopify</div>
+            <div class="stage-name">Media</div>
+            <div class="stage-sub">staged upload</div>
           </div>
           <div class="rail-node" data-stage="5">
             <div class="lamp" id="lamp5">05</div>
@@ -602,7 +720,7 @@
       <div class="result-panel" id="resultPanel">
         <div class="empty-state">
           <div class="glyph">＋</div>
-          <p>Fill in a product on the left and hit Launch.<br>Results from the live Shopify store will appear here.</p>
+          <p>Fill in a product on the left or select a product folder and hit Launch.<br>Results from the live Shopify store will appear here.</p>
         </div>
       </div>
     </div>
@@ -614,6 +732,53 @@
 const API_BASE = window.location.origin;
 let pollTimer = null;
 let railTimer = null;
+let selectedFiles = [];
+
+// ---------- Tab switcher ----------
+function switchTab(mode) {
+  const tabCampaign = document.getElementById('tabCampaign');
+  const tabFolder = document.getElementById('tabFolder');
+  const campaignFields = document.getElementById('campaignFields');
+  const folderUploadSection = document.getElementById('folderUploadSection');
+  
+  if (mode === 'campaign') {
+    tabCampaign.classList.add('active');
+    tabFolder.classList.remove('active');
+    campaignFields.style.display = 'block';
+    folderUploadSection.style.display = 'none';
+  } else {
+    tabFolder.classList.add('active');
+    tabCampaign.classList.remove('active');
+    campaignFields.style.display = 'none';
+    folderUploadSection.style.display = 'block';
+  }
+}
+
+// ---------- Folder Selection ----------
+function handleFolderSelect(event) {
+  const files = event.target.files;
+  if (!files || files.length === 0) return;
+  
+  selectedFiles = Array.from(files);
+  
+  let folderName = 'Selected Folder';
+  const firstPath = files[0].webkitRelativePath;
+  if (firstPath) {
+    folderName = firstPath.split('/')[0];
+  }
+  
+  const hasJson = selectedFiles.some(f => f.name.toLowerCase() === 'product.json');
+  
+  const infoDiv = document.getElementById('selectedFolderInfo');
+  infoDiv.style.display = 'block';
+  infoDiv.innerHTML = `
+    <strong>Folder:</strong> ${folderName}<br>
+    <strong>Files:</strong> ${files.length} detected<br>
+    <span style="font-size: 11px; color: ${hasJson ? 'var(--green)' : 'var(--amber)'};">
+      ${hasJson ? '✓ product.json detected' : '⚠ product.json missing (will fallback to text files)'}
+    </span>
+  `;
+}
 
 // ---------- Health check ----------
 async function checkHealth(){
@@ -649,7 +814,6 @@ function resetRail(){
 }
 
 function setRailProgress(activeStage){
-  // activeStage: 0 = none active yet, 1-6 = which stage is currently pulsing
   for(let i=1;i<=STAGE_COUNT;i++){
     const lamp = document.getElementById('lamp'+i);
     if(i < activeStage){
@@ -687,10 +851,6 @@ function failRailAt(stage){
   }
 }
 
-// Animate the rail as an estimated progress indicator while the
-// workflow runs in the background (the API reports overall status
-// only, not a live per-agent signal, so this reflects typical pacing
-// rather than a guaranteed real-time position).
 function animateRail(){
   let stage = 1;
   setRailProgress(stage);
@@ -698,10 +858,10 @@ function animateRail(){
     stage += 1;
     if(stage > STAGE_COUNT) stage = STAGE_COUNT;
     setRailProgress(stage);
-  }, 3200);
+  }, 4500);
 }
 
-// ---------- Launch flow ----------
+// ---------- Launch Campaign Flow ----------
 async function launchProduct(){
   const productName = document.getElementById('productName').value.trim();
   const rawDescription = document.getElementById('rawDescription').value.trim();
@@ -750,6 +910,48 @@ async function launchProduct(){
   }
 }
 
+// ---------- Launch Folder Flow ----------
+async function launchFolderProduct() {
+  if (selectedFiles.length === 0) {
+    renderError('Please select a product folder first.');
+    return;
+  }
+  
+  const btn = document.getElementById('launchFolderBtn');
+  const btnText = document.getElementById('launchFolderBtnText');
+  btn.disabled = true;
+  btnText.innerHTML = '<span class="spinner"></span>';
+  
+  resetRail();
+  animateRail();
+  renderPending();
+  
+  try {
+    const formData = new FormData();
+    for (let file of selectedFiles) {
+      formData.append('files', file, file.webkitRelativePath || file.name);
+    }
+    
+    const res = await fetch(`${API_BASE}/launch-folder`, {
+      method: 'POST',
+      body: formData
+    });
+    
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail ? JSON.stringify(err.detail) : `Launch folder failed (${res.status})`);
+    }
+    
+    const data = await res.json();
+    pollStatus(data.session_id);
+  } catch (e) {
+    completeRail(false);
+    renderError(e.message || 'Could not reach the folder launch API.');
+    btn.disabled = false;
+    btnText.textContent = 'Launch from Folder';
+  }
+}
+
 function pollStatus(sessionId){
   if(pollTimer) clearInterval(pollTimer);
 
@@ -769,12 +971,183 @@ function pollStatus(sessionId){
         failRailAt(4);
         renderError((state.errors && state.errors.workflow_error) || 'The workflow failed. Check the server terminal for details.', sessionId);
         resetButton();
+      } else if(state.status === 'awaiting_approval'){
+        clearInterval(pollTimer);
+        if (state.duplicate_detected) {
+          setRailProgress(3);
+        } else {
+          setRailProgress(2);
+        }
+        renderApprovalForm(state, sessionId);
+        resetButton();
       }
-      // pending/running -> keep polling, rail animation keeps going
     }catch(e){
-      // transient network hiccup — keep polling
+      // ignore network errors
     }
   }, 2500);
+}
+
+function renderApprovalForm(state, sessionId) {
+  const manifest = state.manifest || {};
+  const missing = state.missing_fields_list || [];
+  const conflicts = state.conflicts_list || [];
+  const conversions = state.conversions || [];
+  const unsupported = state.unsupported_media || [];
+  const duplicateDetected = state.duplicate_detected;
+  
+  let warningsHtml = '';
+  if (missing.length > 0 || conflicts.length > 0 || duplicateDetected) {
+    warningsHtml = `
+      <div class="mini-card" style="border-color: var(--amber); background: rgba(245, 158, 11, 0.05); grid-column: 1 / -1;">
+        <h3 style="color: var(--amber); display: flex; align-items: center; gap: 8px;">
+          <span>⚠️</span> Action Required
+        </h3>
+        <div style="font-size: 13px; line-height: 1.6; color: var(--text-hi); display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+          ${missing.length > 0 ? `<div style="background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); padding: 10px 14px; border-radius: 8px;">
+            <strong style="color: var(--red);">Missing Required Fields:</strong> The agent could not extract the following required fields from the folder:
+            <ul style="margin: 6px 0 0 16px; padding: 0;">${missing.map(f => `<li>${f}</li>`).join('')}</ul>
+          </div>` : ''}
+          
+          ${conflicts.length > 0 ? `<div style="background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.25); padding: 10px 14px; border-radius: 8px;">
+            <strong style="color: var(--amber);">Ingestion Conflicts:</strong> Conflicting values were found between different files:
+            <ul style="margin: 6px 0 0 16px; padding: 0;">${conflicts.map(c => `<li><strong>${c.field}:</strong> ${c.message}</li>`).join('')}</ul>
+          </div>` : ''}
+          
+          ${duplicateDetected ? `<div style="background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.25); padding: 10px 14px; border-radius: 8px;">
+            <strong style="color: var(--primary);">Duplicate Detected:</strong> An existing product matching this Title or SKU was found:
+            <p style="margin: 4px 0 0 0;">Product: <strong>${state.existing_product_title}</strong> (ID: ${state.existing_product_id})</p>
+            <p style="margin: 2px 0 0 0;"><a href="${state.existing_product_url}" target="_blank" style="color: var(--primary); text-decoration: underline;">View existing listing on Shopify ➔</a></p>
+          </div>` : ''}
+        </div>
+      </div>
+    `;
+  }
+
+  let mediaInfoHtml = '';
+  if (conversions.length > 0 || unsupported.length > 0) {
+    mediaInfoHtml = `
+      <div class="mini-card" style="border-color: var(--border); grid-column: 1 / -1;">
+        <h3>📁 Media processing summary</h3>
+        <div style="font-size: 13px; line-height: 1.5; color: var(--text-lo); display: flex; flex-direction: column; gap: 8px; margin-top: 8px;">
+          ${conversions.map(c => `<div style="color: var(--green);">✓ ${c}</div>`).join('')}
+          ${unsupported.map(u => `<div style="color: var(--text-dim);">⚠ Skipped ${u.filename}: ${u.reason}</div>`).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  const productNameVal = state.product_name || '';
+  const productPriceVal = state.price !== null && state.price !== undefined ? state.price : '';
+  const productDescVal = state.raw_description || '';
+  const productSkuVal = state.sku || '';
+  const productQtyVal = state.inventory_quantity !== null && state.inventory_quantity !== undefined ? state.inventory_quantity : '';
+
+  document.getElementById('resultPanel').innerHTML = `
+    <div class="status-line">
+      <span class="status-pill pending">awaiting approval</span>
+      <span>Staged Product Preview & Field Mapping</span>
+      <span class="session-id">(${sessionId.substring(0,8)}…)</span>
+    </div>
+
+    <div class="card-grid">
+      ${warningsHtml}
+      ${mediaInfoHtml}
+
+      <!-- Interactive Review Form -->
+      <div class="mini-card" style="grid-column: 1 / -1;">
+        <h3>📝 Stage Mapping Fields</h3>
+        <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
+          <div class="field" style="margin-bottom: 0;">
+            <label for="approveName">Product Name</label>
+            <input type="text" id="approveName" value="${productNameVal}" placeholder="Enter resolved product name..." />
+          </div>
+          
+          <div class="field" style="margin-bottom: 0;">
+            <label for="approveDesc">Product Description</label>
+            <textarea id="approveDesc" style="min-height: 120px;" placeholder="Enter resolved product description...">${productDescVal}</textarea>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div class="field price-input" style="margin-bottom: 0;">
+              <label for="approvePrice">Price</label>
+              <span style="top: calc(50% + 10px);">₹</span>
+              <input type="number" id="approvePrice" value="${productPriceVal}" placeholder="Price..." style="padding-left: 28px;" />
+            </div>
+            
+            <div class="field" style="margin-bottom: 0;">
+              <label for="approveSku">SKU</label>
+              <input type="text" id="approveSku" value="${productSkuVal}" placeholder="SKU..." />
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div class="field" style="margin-bottom: 0;">
+              <label for="approveQty">Inventory Quantity</label>
+              <input type="number" id="approveQty" value="${productQtyVal}" placeholder="Quantity..." />
+            </div>
+
+            <!-- Duplicate Action Selector -->
+            <div class="field" style="margin-bottom: 0;">
+              <label for="approveDuplicateAction">If Duplicate Detected</label>
+              <select id="approveDuplicateAction" style="width: 100%; background: rgba(10, 12, 22, 0.5); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; color: var(--text-hi); font-size: 14px; outline: none; transition: all 0.2s;">
+                <option value="UPDATE" ${state.duplicate_action === 'UPDATE' ? 'selected' : ''}>Update Existing Product</option>
+                <option value="CREATE" ${state.duplicate_action === 'CREATE' ? 'selected' : ''}>Create New Duplicate Product</option>
+                <option value="CANCEL" ${state.duplicate_action === 'CANCEL' ? 'selected' : ''}>Cancel Launch</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 16px; margin-top: 10px; justify-content: flex-end;">
+            <button class="launch-btn" id="approveBtn" onclick="submitApproval('${sessionId}')" style="width: auto; padding: 12px 28px; margin-top: 0; background: linear-gradient(135deg, var(--green) 0%, #059669 100%); box-shadow: 0 4px 15px var(--green-glow);">
+              Approve & Publish
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+async function submitApproval(sessionId) {
+  const approveName = document.getElementById('approveName').value.trim();
+  const approveDesc = document.getElementById('approveDesc').value.trim();
+  const approvePrice = document.getElementById('approvePrice').value;
+  const approveSku = document.getElementById('approveSku').value.trim();
+  const approveQty = document.getElementById('approveQty').value;
+  const approveDuplicateAction = document.getElementById('approveDuplicateAction').value;
+
+  const btn = document.getElementById('approveBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Processing...';
+
+  try {
+    const res = await fetch(`${API_BASE}/api/folder-launch/${sessionId}/approve`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        product_name: approveName || null,
+        product_description: approveDesc || null,
+        product_price: approvePrice ? parseFloat(approvePrice) : null,
+        sku: approveSku || null,
+        inventory_quantity: approveQty ? parseInt(approveQty) : null,
+        duplicate_action: approveDuplicateAction,
+        approved_to_publish: true
+      })
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail ? JSON.stringify(err.detail) : `Approval request failed (${res.status})`);
+    }
+
+    resetButton();
+    renderPending();
+    pollStatus(sessionId);
+  } catch (e) {
+    btn.disabled = false;
+    btn.textContent = 'Approve & Publish';
+    alert(e.message || 'Failed to submit approval.');
+  }
 }
 
 function resetButton(){
@@ -782,96 +1155,110 @@ function resetButton(){
   const btnText = document.getElementById('launchBtnText');
   btn.disabled = false;
   btnText.textContent = 'Launch product';
+  
+  const fBtn = document.getElementById('launchFolderBtn');
+  const fBtnText = document.getElementById('launchFolderBtnText');
+  if (fBtn && fBtnText) {
+    fBtn.disabled = false;
+    fBtnText.textContent = 'Launch from Folder';
+  }
 }
 
-// ---------- Rendering ----------
 function renderPending(){
   document.getElementById('resultPanel').innerHTML = `
     <div class="status-line">
       <span class="spinner"></span>
-      <span>Workflow running — agents are generating content and publishing to Shopify…</span>
+      <span>Workflow running — agents are processing folder details, uploading media, and creating product…</span>
     </div>
   `;
 }
 
 function renderError(message, sessionId){
+  let sessionHtml = '';
+  if(sessionId){
+    sessionHtml = `<div class="session-id">Session ID: ${sessionId}</div>`;
+  }
+  
+  // Format long errors with newlines
+  const formattedMsg = message.replace(/\n/g, '<br>');
+  
   document.getElementById('resultPanel').innerHTML = `
     <div class="status-line">
-      <span class="status-pill failed">Failed</span>
-      ${sessionId ? `<span class="session-id">session ${sessionId}</span>` : ''}
+      <span class="status-pill failed">failed</span>
+      <span>Pipeline execution halted.</span>
     </div>
-    <div class="error-card">${escapeHtml(message)}</div>
+    <div class="error-card">
+      <strong>Pipeline Error:</strong><br>
+      ${formattedMsg}
+    </div>
+    ${sessionHtml}
   `;
 }
 
 function renderResult(state, sessionId){
-  const product = state.shopify_product || {};
-  const seo = state.seo_metadata || {};
-  const verification = state.verification_result || {};
-  const marketing = state.marketing || {};
+  const name = state.product_name;
+  const price = state.price ? `₹${state.price}` : 'N/A';
+  const url = state.shopify_url || '#';
+  const tags = (state.seo_metadata && state.seo_metadata.keywords) ? state.seo_metadata.keywords.split(',').map(t=>`<span class="tag">${t.trim()}</span>`).join('') : '';
+  const desc = state.generated_description || 'No description generated.';
+  const verify = state.verification_result || {};
 
-  const tags = (product.tags || '').split(',').map(t=>t.trim()).filter(Boolean);
+  const checkItem = (label, pass) => `
+    <li>
+      <span class="icon ${pass ? 'pass':'fail'}">${pass ? '✓':'✗'}</span>
+      <span>${label}</span>
+    </li>
+  `;
 
-  const checklist = [
-    ['Product exists on Shopify', verification.product_exists],
-    ['Status is active', verification.status_active],
-    ['Price matches', verification.price_matched],
-    ['Purchasable', verification.purchasable],
-  ];
+  const folderReportHtml = state.folder_report ? `
+    <div class="mini-card" style="grid-column: 1 / -1;">
+      <h3>Folder Ingestion Report</h3>
+      <pre style="background: rgba(0,0,0,0.3); padding: 14px; border-radius: 8px; max-height: 250px; overflow-y: auto; font-size:12px; line-height: 1.5; font-family: 'JetBrains Mono', monospace; color: var(--text-hi); border: 1px solid var(--border); margin: 0; white-space: pre-wrap;">${state.folder_report}</pre>
+    </div>
+  ` : '';
 
   document.getElementById('resultPanel').innerHTML = `
     <div class="status-line">
-      <span class="status-pill completed">Live</span>
-      <span class="session-id">session ${sessionId}</span>
+      <span class="status-pill completed">completed</span>
+      <span>Finished processing.</span>
+      <span class="session-id">(${sessionId.substring(0,8)}…)</span>
     </div>
 
     <div class="card-grid">
-
       <div class="product-hero">
         <div class="info">
-          <h3>${escapeHtml(product.title || state.product_name || 'Untitled product')}</h3>
-          <div class="price">₹${(product.price ?? state.price ?? '—')}</div>
-          ${tags.length ? `<div class="tag-row">${tags.slice(0,6).map(t=>`<span class="tag">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
+          <h3>${name}</h3>
+          <div class="price">${price}</div>
+          <div class="tag-row">${tags}</div>
         </div>
-        ${state.shopify_url ? `<a class="view-btn" href="${state.shopify_url}" target="_blank" rel="noopener">View on Shopify →</a>` : ''}
+        <a href="${url}" target="_blank" class="view-btn">View on Shopify ➔</a>
+      </div>
+
+      ${folderReportHtml}
+
+      <div class="mini-card" style="grid-column: 1 / -1;">
+        <h3>Shopify Product Description</h3>
+        <div style="background: rgba(0,0,0,0.2); padding: 14px; border-radius: 8px; max-height: 200px; overflow-y: auto; font-size:13px; line-height: 1.5;">
+          ${desc}
+        </div>
       </div>
 
       <div class="mini-card">
-        <h3><span class="ok">✓</span> Verification</h3>
+        <h3>Shopify Live Verification</h3>
         <ul class="check-list">
-          ${checklist.map(([label, pass])=>`
-            <li><span class="icon ${pass ? 'pass':'fail'}">${pass ? '✓':'✕'}</span> ${label}</li>
-          `).join('')}
+          ${checkItem('Listing Active', verify.status_active)}
+          ${checkItem('Price Verified', verify.price_matched)}
+          ${checkItem('Variant Synced', verify.purchasable)}
         </ul>
       </div>
 
       <div class="mini-card">
-        <h3>SEO metadata</h3>
-        <p><strong>${escapeHtml(seo.title || '—')}</strong></p>
-        <p style="margin-top:6px;">${escapeHtml(seo.description || '—')}</p>
+        <h3>SEO Details</h3>
+        <p><strong>Title:</strong> ${state.seo_metadata ? state.seo_metadata.title : 'N/A'}</p>
+        <p style="margin-top: 6px;"><strong>Slug:</strong> ${state.seo_metadata ? state.seo_metadata.slug : 'N/A'}</p>
       </div>
-
-      <div class="mini-card" style="grid-column:1 / -1;">
-        <h3>Marketing campaign</h3>
-        <p><strong>${escapeHtml(marketing.campaign_name || '—')}</strong></p>
-        <p style="margin-top:6px;">${escapeHtml(marketing.social_caption || '')}</p>
-      </div>
-
-      <div class="mini-card" style="grid-column:1 / -1;">
-        <h3>Reports</h3>
-        <p>Markdown: <span class="session-id">${escapeHtml(state.markdown_report_path || '—')}</span></p>
-        <p style="margin-top:4px;">JSON: <span class="session-id">${escapeHtml(state.json_report_path || '—')}</span></p>
-      </div>
-
     </div>
   `;
-}
-
-function escapeHtml(str){
-  if(str === null || str === undefined) return '';
-  return String(str)
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
 }
 </script>
 </body>

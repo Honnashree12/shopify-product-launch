@@ -1,28 +1,22 @@
-# Python
-__pycache__/
-*.py[cod]
-*.pyo
-*.pyd
-*.egg-info/
-
-# Virtual Environment
-venv/
-.env/
-.venv/
-
 # Environment variables
 .env
 
-# VS Code
-.vscode/
+# Python
+__pycache__/
+*.pyc
 
-# PyCharm
-.idea/
+# Virtual Environment
+.venv/
+venv/
 
-# Outputs
-outputs/
-*.log
+# Mock Database
+shopify_mock/*.db
 
-# OS files
+# Outputs (keeping outputs/.gitkeep)
+outputs/*.json
+outputs/*.md
+
+# OS / Editor junk
 .DS_Store
-Thumbs.db
+.vscode/
+.idea/
